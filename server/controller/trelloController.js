@@ -20,6 +20,7 @@ export function getCards(req, res) {
 }
 
 export function createBoard(req, res) {
+  console.log("hey");
   const { title } = req.body;
   createBoardDB(title).then((data) => res.json(data));
 }
