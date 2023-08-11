@@ -2,19 +2,25 @@ import pool from "./database.js";
 
 export async function getBoardsDB() {
   const result = await pool.query("SELECT * FROM trelloBoard");
-  //   console.log("res=", result.rows);
   return result.rows;
 }
 
-export async function getListsDB() {
-  const result = await pool.query("SELECT * FROM trelloLists");
+export async function getListsForBoardDB(boardId) {
+  const result = await pool.query(
+    "SELECT * FROM trelloLists WHERE board_id=$1",
+    [boardId]
+  );
   return result.rows;
 }
 
-export async function getCardsDB() {
-  const result = await pool.query("SELECT * FROM trelloCards");
+export async function getCardsForListDB(listId) {
+  const result = await pool.query(
+    "SELECT * FROM trelloCards WHERE list_id=$1",
+    [listId]
+  );
   return result.rows;
 }
+// console.log(await getCardsForListDB(1, 1));
 
 export async function createBoardDB(title) {
   const result = await pool.query(

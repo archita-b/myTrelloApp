@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { createBoard, fetchBoards } from "./requests";
+import {
+  createBoard,
+  fetchBoards,
+  fetchCardsForList,
+  fetchListsForBoard,
+} from "./requests";
 
 function App() {
   const [boards, setBoards] = useState([]);
@@ -8,13 +13,31 @@ function App() {
   const [boardTitle, setBoardTitle] = useState("");
 
   useEffect(() => {
-    fetchBoards().then((data) => setBoards(data));
+    fetchBoards().then((data) => {
+      setBoards(data);
+    });
   }, []);
+
+  useEffect(() => {
+    if (boards.length !== 0) {
+      fetchListsForBoard(boards[0].id).then((data) => {
+        setLists(data);
+      });
+    }
+  }, [boards]);
+
+  useEffect(() => {
+    if (lists.length !== 0) {
+      fetchCardsForList(boards[0].id, lists[0].id).then((data) => {
+        setCards(data);
+      });
+    }
+  }, [lists]);
 
   function addBoard(title) {
     createBoard(title).then((data) => {
       setBoards((currentBoard) => {
-        return [...currentBoard, data];
+        return [...currentBoard, ...data];
       });
     });
   }
@@ -27,6 +50,7 @@ function App() {
 
   return (
     <>
+      <h1>Trello-app</h1>
       <label>
         Board-title
         <input
@@ -37,14 +61,15 @@ function App() {
       </label>
       <button onClick={handleclick}>Create Board</button>
       <div className="board-container">
-        <h2>{boards.title}</h2>
-        {boards.map((board) => {
+        <h2>{boards.length === 0 ? "" : boards[0].title}</h2>
+        {lists.map((list) => {
           return (
-            <div className="list-container" key={board.id}>
-              {lists.map((list) => {
+            <div className="list-container" key={list.id}>
+              <h3>{list !== null ? list.title : ""}</h3>
+              {cards.map((card) => {
                 return (
-                  <div className="card-container" key={list.id}>
-                    {cards}
+                  <div className="card-container" key={card.id}>
+                    {card !== null ? card.title : ""}
                   </div>
                 );
               })}

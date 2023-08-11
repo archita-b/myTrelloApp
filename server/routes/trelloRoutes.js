@@ -1,8 +1,8 @@
 import express from "express";
 import {
   getBoard,
-  getLists,
-  getCards,
+  getListsForBoard,
+  getCardsForList,
   createBoard,
   updateBoard,
   deleteBoard,
@@ -11,10 +11,10 @@ import {
 const router = express.Router();
 
 router.route("/boards").get(getBoard).post(createBoard);
-router.route("/boards/:id").put(updateBoard).delete(deleteBoard);
+// router.route("/boards/:id").put(updateBoard).delete(deleteBoard);
 
-router.route("/lists").get(getLists);
+router.route("/boards/:board_id/lists").get(getListsForBoard);
 
-router.route("/cards").get(getCards);
+router.route("/boards/:board_id/lists/:list_id/cards").get(getCardsForList);
 
 export default router;

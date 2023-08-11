@@ -1,7 +1,7 @@
 import {
   getBoardsDB,
-  getListsDB,
-  getCardsDB,
+  getListsForBoardDB,
+  getCardsForListDB,
   createBoardDB,
   updateBoardDB,
   deleteBoardDB,
@@ -11,17 +11,19 @@ export function getBoard(req, res) {
   getBoardsDB().then((data) => res.json(data));
 }
 
-export function getLists(req, res) {
-  getListsDB().then((data) => res.json(data));
+export function getListsForBoard(req, res) {
+  const boardId = req.params.board_id;
+  getListsForBoardDB(boardId).then((data) => res.json(data));
 }
 
-export function getCards(req, res) {
-  getCardsDB().then((data) => res.json(data));
+export function getCardsForList(req, res) {
+  const boardId = req.params.board_id;
+  const listId = req.params.list_id;
+  getCardsForListDB(boardId, listId).then((data) => res.json(data));
 }
 
 export function createBoard(req, res) {
-  console.log("hey");
-  const { title } = req.body;
+  const title = req.body.title;
   createBoardDB(title).then((data) => res.json(data));
 }
 

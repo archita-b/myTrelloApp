@@ -6,15 +6,28 @@ export async function fetchBoards() {
   return data;
 }
 
+export async function fetchListsForBoard(boardId) {
+  const res = await fetch(url + "/boards/" + boardId + "/lists");
+  const data = await res.json();
+  return data;
+}
+
+export async function fetchCardsForList(boardId, listId) {
+  const res = await fetch(
+    url + "/boards/" + boardId + "/lists/" + listId + "/cards"
+  );
+  const data = await res.json();
+  return data;
+}
+
 export async function createBoard(title) {
-  console.log("hi");
   const res = await fetch(url + "/boards", {
     method: "POST",
     headers: {
       "Content-type": "Application/json",
     },
-    body: JSON.stringify(title),
+    body: JSON.stringify({ title }),
   });
-  const data = res.json();
+  const data = await res.json();
   return data;
 }
