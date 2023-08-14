@@ -14,3 +14,7 @@ CREATE TABLE trelloCards (
     list_id INTEGER REFERENCES trelloLists(id),
     title VARCHAR(50) NOT NULL
 );
+
+SELECT trelloCards.id as cardId, trelloLists.id as listId, trelloCards.title as cardTitle, trelloLists.title as listTitle
+FROM trelloCards 
+INNER JOIN trelloLists ON trelloCards.list_id=trelloLists.id

@@ -12,11 +12,10 @@ export async function fetchListsForBoard(boardId) {
   return data;
 }
 
-export async function fetchCardsForList(boardId, listId) {
-  const res = await fetch(
-    url + "/boards/" + boardId + "/lists/" + listId + "/cards"
-  );
+export async function fetchCardsForList(boardId) {
+  const res = await fetch(url + "/boards/" + boardId + "/cards");
   const data = await res.json();
+  // console.log("data=", data);
   return data;
 }
 

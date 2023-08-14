@@ -28,7 +28,7 @@ function App() {
 
   useEffect(() => {
     if (lists.length !== 0) {
-      fetchCardsForList(boards[0].id, lists[0].id).then((data) => {
+      fetchCardsForList(boards[0].id).then((data) => {
         setCards(data);
       });
     }
@@ -67,11 +67,11 @@ function App() {
             <div className="list-container" key={list.id}>
               <h3>{list !== null ? list.title : ""}</h3>
               {cards
-                .filter((card) => card.list_id === list.id)
+                .filter((card) => card.listid === list.id)
                 .map((card) => {
                   return (
                     <div className="card-container" key={card.id}>
-                      {card !== null ? card.title : ""}
+                      {card !== null ? card.cardtitle : ""}
                     </div>
                   );
                 })}

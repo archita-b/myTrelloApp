@@ -8,18 +8,19 @@ import {
 } from "../model/trelloModel.js";
 
 export function getBoard(req, res) {
-  getBoardsDB().then(res.json);
+  // getBoardsDB().then(res.json.bind(res));
+  getBoardsDB().then((data) => res.json(data));
 }
 
 export function getListsForBoard(req, res) {
   const boardId = req.params.board_id;
-  getListsForBoardDB(boardId).then(res.json);
+  getListsForBoardDB(boardId).then((data) => res.json(data));
 }
 
 export function getCardsForList(req, res) {
   const boardId = req.params.board_id;
   const listId = req.params.list_id;
-  getCardsForListDB(boardId, listId).then(res.json);
+  getCardsForListDB(boardId, listId).then((data) => res.json(data));
 }
 
 export function createBoard(req, res) {

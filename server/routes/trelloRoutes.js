@@ -15,6 +15,6 @@ router.route("/boards").get(getBoard).post(createBoard);
 
 router.route("/boards/:board_id/lists").get(getListsForBoard);
 
-router.route("/boards/:board_id/lists/:list_id/cards").get(getCardsForList);
+router.route("/boards/:board_id/cards").get(getCardsForList);
 
 export default router;
