@@ -66,13 +66,15 @@ function App() {
           return (
             <div className="list-container" key={list.id}>
               <h3>{list !== null ? list.title : ""}</h3>
-              {cards.map((card) => {
-                return (
-                  <div className="card-container" key={card.id}>
-                    {card !== null ? card.title : ""}
-                  </div>
-                );
-              })}
+              {cards
+                .filter((card) => card.list_id === list.id)
+                .map((card) => {
+                  return (
+                    <div className="card-container" key={card.id}>
+                      {card !== null ? card.title : ""}
+                    </div>
+                  );
+                })}
             </div>
           );
         })}
