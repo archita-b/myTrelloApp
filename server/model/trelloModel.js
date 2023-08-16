@@ -20,8 +20,15 @@ export async function getCardsForListDB(boardId, listId) {
       FROM trelloCards 
       INNER JOIN trelloLists ON trelloCards.list_id=trelloLists.id`
   );
-  // console.log("result=", result.rows);
   return result.rows;
+}
+
+export async function createListForBoardDB(title, boardId) {
+  const result = await pool.query(
+    "INSERT INTO trelloLists(title,board_id) VALUES ($1,$2) RETURNING *",
+    [title, boardId]
+  );
+  return result.rows[0];
 }
 
 export async function createCardForListDB(title, listId) {
@@ -29,10 +36,8 @@ export async function createCardForListDB(title, listId) {
     "INSERT INTO trelloCards(title,list_id) VALUES ($1,$2) RETURNING *",
     [title, listId]
   );
-  // console.log("result=", result.rows);
   return result.rows[0];
 }
-// console.log(await createCardForListDB("2nd", 1));
 
 export async function createBoardDB(title) {
   const result = await pool.query(

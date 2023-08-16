@@ -31,7 +31,10 @@ export default function Card({ list, cards, setCards }) {
         .map((card) => {
           return (
             <div className="add-card-title" key={card.cardid}>
-              <input value={card.cardtitle}></input>
+              <input
+                value={card.cardtitle}
+                onChange={(e) => setCardTitle(e.target.value)}
+              ></input>
             </div>
           );
         })}

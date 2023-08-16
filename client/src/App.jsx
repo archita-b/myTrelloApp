@@ -23,7 +23,11 @@ function App() {
   return (
     <>
       <Header addBoard={addBoard} />
-      <Board boards={boards} />
+      <div>
+        {boards.map((board) => {
+          return <Board board={board} key={board.id} />;
+        })}
+      </div>
     </>
   );
 }

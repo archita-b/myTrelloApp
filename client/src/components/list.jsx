@@ -1,18 +1,24 @@
 import { useEffect, useState } from "react";
 import Card from "./card";
-import { fetchListsForBoard } from "../requests";
+import { createList, fetchListsForBoard } from "../requests";
 
-export default function List({ boards, lists, setLists, addList }) {
+export default function List({ board, lists, setLists }) {
   const [listTitle, setListTitle] = useState("");
   const [cards, setCards] = useState([]);
 
   useEffect(() => {
-    if (boards.length !== 0) {
-      fetchListsForBoard(boards[0].id).then((data) => {
+    if (board !== 0) {
+      fetchListsForBoard(board.id).then((data) => {
         setLists(data);
       });
     }
-  }, [boards]);
+  }, [board]);
+
+  function addList(title) {
+    createList(title, board.id).then((data) => {
+      setLists((currentList) => [...currentList, { ...data }]);
+    });
+  }
 
   function handleCreateList() {
     if (listTitle.trim() === "") return;
@@ -35,8 +41,12 @@ export default function List({ boards, lists, setLists, addList }) {
           </div>
         );
       })}
-      <textarea placeholder="Enter list title..."></textarea>
-      <button>Add List</button>
+      <textarea
+        value={listTitle}
+        onChange={(e) => setListTitle(e.target.value)}
+        placeholder="Enter list title..."
+      ></textarea>
+      <button onClick={handleCreateList}>Add List</button>
       <button>X</button>
     </div>
   );

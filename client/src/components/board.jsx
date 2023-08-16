@@ -1,25 +1,13 @@
 import { useState } from "react";
 import List from "./list";
-import { createList } from "../requests";
 
-export default function Board({ boards }) {
+export default function Board({ board }) {
   const [lists, setLists] = useState([]);
-
-  function addList(title) {
-    createList(title).then((data) => {
-      setLists((currentList) => [...currentList, ...data]);
-    });
-  }
 
   return (
     <div className="board-container">
-      <h2>{boards.length === 0 ? "" : boards[0].title}</h2>
-      <List
-        boards={boards}
-        lists={lists}
-        setLists={setLists}
-        addList={addList}
-      />
+      <h2>{board === null ? "" : board.title}</h2>
+      <List board={board} lists={lists} setLists={setLists} />
     </div>
   );
 }

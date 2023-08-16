@@ -30,8 +30,8 @@ export async function createBoard(title) {
   return data;
 }
 
-export async function createList(title) {
-  const res = await fetch(url + "/lists", {
+export async function createList(title, boardId) {
+  const res = await fetch(url + "/boards/" + boardId + "/lists", {
     method: "POST",
     headers: {
       "Content-type": "Application/json",
