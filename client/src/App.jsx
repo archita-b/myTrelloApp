@@ -4,13 +4,13 @@ import {
   fetchBoards,
   fetchCardsForList,
   fetchListsForBoard,
+  createCard,
 } from "./requests";
+import Header from "./components/header";
+import Board from "./components/board";
 
 function App() {
   const [boards, setBoards] = useState([]);
-  const [lists, setLists] = useState([]);
-  const [cards, setCards] = useState([]);
-  const [boardTitle, setBoardTitle] = useState("");
 
   useEffect(() => {
     fetchBoards().then((data) => {
@@ -18,21 +18,13 @@ function App() {
     });
   }, []);
 
-  useEffect(() => {
-    if (boards.length !== 0) {
-      fetchListsForBoard(boards[0].id).then((data) => {
-        setLists(data);
-      });
-    }
-  }, [boards]);
-
-  useEffect(() => {
-    if (lists.length !== 0) {
-      fetchCardsForList(boards[0].id).then((data) => {
-        setCards(data);
-      });
-    }
-  }, [lists]);
+  // useEffect(() => {
+  //   if (lists.length !== 0) {
+  //     fetchCardsForList(boards[0].id).then((data) => {
+  //       setCards(data);
+  //     });
+  //   }
+  // }, [lists]);
 
   function addBoard(title) {
     createBoard(title).then((data) => {
@@ -42,43 +34,24 @@ function App() {
     });
   }
 
-  function handleclick() {
-    if (boardTitle.trim() === "") return;
-    addBoard(boardTitle);
-    setBoardTitle("");
-  }
+  // function addCard(title) {
+  //   createCard(title).then((data) => {
+  //     setCards((currentCard) => {
+  //       return [...currentCard, ...data];
+  //     });
+  //   });
+  // }
+
+  // function handleCreateCard() {
+  //   if (cardTitle.trim() === "") return;
+  //   addCard(cardTitle);
+  //   setCardTitle("");
+  // }
 
   return (
     <>
-      <h1>Trello-app</h1>
-      <label>
-        Board-title
-        <input
-          value={boardTitle}
-          onChange={(e) => setBoardTitle(e.target.value)}
-          type="text"
-        ></input>
-      </label>
-      <button onClick={handleclick}>Create Board</button>
-      <div className="board-container">
-        <h2>{boards.length === 0 ? "" : boards[0].title}</h2>
-        {lists.map((list) => {
-          return (
-            <div className="list-container" key={list.id}>
-              <h3>{list !== null ? list.title : ""}</h3>
-              {cards
-                .filter((card) => card.listid === list.id)
-                .map((card) => {
-                  return (
-                    <div className="card-container" key={card.id}>
-                      {card !== null ? card.cardtitle : ""}
-                    </div>
-                  );
-                })}
-            </div>
-          );
-        })}
-      </div>
+      <Header addBoard={addBoard} />
+      <Board boards={boards} />
     </>
   );
 }
