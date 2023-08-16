@@ -12,10 +12,9 @@ export async function fetchListsForBoard(boardId) {
   return data;
 }
 
-export async function fetchCardsForList() {
-  const res = await fetch(url + "/cards");
+export async function fetchCardsForList(listId) {
+  const res = await fetch(url + "/lists/" + listId + "/cards");
   const data = await res.json();
-  // console.log("data=", data);
   return data;
 }
 
@@ -43,8 +42,8 @@ export async function createList(title) {
   return data;
 }
 
-export async function createCard(title) {
-  const res = await fetch(url + "/cards", {
+export async function createCard(title, listId) {
+  const res = await fetch(url + "/lists/" + listId + "/cards", {
     method: "POST",
     headers: {
       "Content-type": "Application/json",

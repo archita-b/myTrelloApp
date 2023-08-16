@@ -6,6 +6,7 @@ import {
   createBoard,
   updateBoard,
   deleteBoard,
+  createCardForList,
 } from "../controller/trelloController.js";
 
 const router = express.Router();
@@ -15,6 +16,9 @@ router.route("/boards").get(getBoard).post(createBoard);
 
 router.route("/boards/:board_id/lists").get(getListsForBoard);
 
-router.route("/cards").get(getCardsForList);
+router
+  .route("/lists/:list_id/cards")
+  .get(getCardsForList)
+  .post(createCardForList);
 
 export default router;

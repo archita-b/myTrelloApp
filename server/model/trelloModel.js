@@ -24,6 +24,16 @@ export async function getCardsForListDB(boardId, listId) {
   return result.rows;
 }
 
+export async function createCardForListDB(title, listId) {
+  const result = await pool.query(
+    "INSERT INTO trelloCards(title,list_id) VALUES ($1,$2) RETURNING *",
+    [title, listId]
+  );
+  // console.log("result=", result.rows);
+  return result.rows[0];
+}
+// console.log(await createCardForListDB("2nd", 1));
+
 export async function createBoardDB(title) {
   const result = await pool.query(
     "INSERT INTO trelloBoard (title) VALUES ($1) RETURNING *",

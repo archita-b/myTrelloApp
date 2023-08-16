@@ -13,14 +13,15 @@ export default function Card({ list, cards, setCards }) {
   }, [list]);
 
   function addCard(title) {
-    createCard(title).then((data) => {
-      setCards((currentCard) => [...currentCard, ...data]);
+    createCard(title, list.id).then((data) => {
+      setCards((currentCards) => [...currentCards, { ...data }]);
     });
   }
 
   function handleCreateCard() {
     if (cardTitle.trim() === "") return;
     addCard(cardTitle);
+    setCardTitle("");
   }
 
   return (
@@ -29,13 +30,18 @@ export default function Card({ list, cards, setCards }) {
         .filter((card) => card.listid === list.id)
         .map((card) => {
           return (
-            <>
+            <div className="add-card-title" key={card.cardid}>
               <input value={card.cardtitle}></input>
-              <button>Add card</button>
-              <button>X</button>
-            </>
+            </div>
           );
         })}
+      <textarea
+        value={cardTitle}
+        onChange={(e) => setCardTitle(e.target.value)}
+        placeholder="Enter a title for this card..."
+      ></textarea>
+      <button onClick={handleCreateCard}>Add card</button>
+      <button>X</button>
     </div>
   );
 }

@@ -1,11 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  createBoard,
-  fetchBoards,
-  fetchCardsForList,
-  fetchListsForBoard,
-  createCard,
-} from "./requests";
+import { createBoard, fetchBoards } from "./requests";
 import Header from "./components/header";
 import Board from "./components/board";
 
@@ -18,14 +12,6 @@ function App() {
     });
   }, []);
 
-  // useEffect(() => {
-  //   if (lists.length !== 0) {
-  //     fetchCardsForList(boards[0].id).then((data) => {
-  //       setCards(data);
-  //     });
-  //   }
-  // }, [lists]);
-
   function addBoard(title) {
     createBoard(title).then((data) => {
       setBoards((currentBoard) => {
@@ -33,20 +19,6 @@ function App() {
       });
     });
   }
-
-  // function addCard(title) {
-  //   createCard(title).then((data) => {
-  //     setCards((currentCard) => {
-  //       return [...currentCard, ...data];
-  //     });
-  //   });
-  // }
-
-  // function handleCreateCard() {
-  //   if (cardTitle.trim() === "") return;
-  //   addCard(cardTitle);
-  //   setCardTitle("");
-  // }
 
   return (
     <>

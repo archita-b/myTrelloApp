@@ -5,6 +5,7 @@ import {
   createBoardDB,
   updateBoardDB,
   deleteBoardDB,
+  createCardForListDB,
 } from "../model/trelloModel.js";
 
 export function getBoard(req, res) {
@@ -21,6 +22,12 @@ export function getCardsForList(req, res) {
   const boardId = req.params.board_id;
   const listId = req.params.list_id;
   getCardsForListDB(boardId, listId).then((data) => res.json(data));
+}
+
+export function createCardForList(req, res) {
+  const title = req.body.title;
+  const listId = req.params.list_id;
+  createCardForListDB(title, listId).then((data) => res.json(data));
 }
 
 export function createBoard(req, res) {
