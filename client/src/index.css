@@ -1,6 +1,46 @@
-/* .board-container {
-  background: grey;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.app-heading{
+  background: #bbb;
+  padding: 1em;
+  display: flex;
 }
 .list-container {
-  background: white;
+  display: flex;
+  flex-wrap: nowrap;
+}
+.card-container{
+  display: flex;
+  flex-direction: column;
+}
+.list-box{
+  background: #eee;
+  margin: 1em;
+  padding: 0.5em;
+  border-radius: 1em;
+}
+.add-card-title {
+  background: #fff;
+  margin: 0.8em;
+  border-radius: 0.5em;
+}
+/* .add-item {
+  display: flex;
 } */
+.add-btn{
+  background: blue;
+  color: #fff;
+  padding: 0.5em;
+  border: none;
+  border-radius: 0.3em;
+}
+.cross-btn{
+  border: none;
+  margin: 0.5em;
+  font-size: 22px;
+  color: #777;
+}

@@ -31,20 +31,23 @@ export default function Card({ list, cards, setCards }) {
         .map((card) => {
           return (
             <div className="add-card-title" key={card.cardid}>
-              <input
-                value={card.cardtitle}
-                onChange={(e) => setCardTitle(e.target.value)}
-              ></input>
+              <h4>{card.cardtitle}</h4>
             </div>
           );
         })}
-      <textarea
-        value={cardTitle}
-        onChange={(e) => setCardTitle(e.target.value)}
-        placeholder="Enter a title for this card..."
-      ></textarea>
-      <button onClick={handleCreateCard}>Add card</button>
-      <button>X</button>
+      <div className="add-new-card">
+        <textarea
+          value={cardTitle}
+          onChange={(e) => setCardTitle(e.target.value)}
+          placeholder="Enter a title for this card..."
+        ></textarea>
+        <div>
+          <button className="add-btn" onClick={handleCreateCard}>
+            Add card
+          </button>
+          <button className="cross-btn">{"\u00d7"}</button>
+        </div>
+      </div>
     </div>
   );
 }

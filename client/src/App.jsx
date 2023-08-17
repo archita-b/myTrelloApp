@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createBoard, fetchBoards } from "./requests";
+import { fetchBoards } from "./requests";
 import Header from "./components/header";
 import Board from "./components/board";
 
@@ -12,17 +12,9 @@ function App() {
     });
   }, []);
 
-  function addBoard(title) {
-    createBoard(title).then((data) => {
-      setBoards((currentBoard) => {
-        return [...currentBoard, ...data];
-      });
-    });
-  }
-
   return (
     <>
-      <Header addBoard={addBoard} />
+      <Header setBoards={setBoards} />
       <div>
         {boards.map((board) => {
           return <Board board={board} key={board.id} />;

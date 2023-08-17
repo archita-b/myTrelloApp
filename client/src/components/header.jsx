@@ -1,7 +1,16 @@
 import { useState } from "react";
+import { createBoard } from "../requests";
 
-export default function Header({ addBoard }) {
+export default function Header({ setBoards }) {
   const [boardTitle, setBoardTitle] = useState("");
+
+  function addBoard(title) {
+    createBoard(title).then((data) => {
+      setBoards((currentBoard) => {
+        return [...currentBoard, ...data];
+      });
+    });
+  }
 
   function handleCreateBoard() {
     if (boardTitle.trim() === "") return;
@@ -10,17 +19,14 @@ export default function Header({ addBoard }) {
   }
 
   return (
-    <>
-      <h1>Trello-app</h1>
-      <label>
-        Board-title
-        <input
-          value={boardTitle}
-          onChange={(e) => setBoardTitle(e.target.value)}
-          type="text"
-        ></input>
-      </label>
-      <button onClick={handleCreateBoard}>Create Board</button>
-    </>
+    <div className="app-heading">
+      <h3>Trello-app</h3>
+      <input
+        value={boardTitle}
+        onChange={(e) => setBoardTitle(e.target.value)}
+        type="text"
+      ></input>
+      <button onClick={handleCreateBoard}>Create</button>
+    </div>
   );
 }

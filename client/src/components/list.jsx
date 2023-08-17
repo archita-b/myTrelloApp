@@ -30,24 +30,27 @@ export default function List({ board, lists, setLists }) {
     <div className="list-container">
       {lists.map((list) => {
         return (
-          <div key={list.id}>
+          <div className="list-box" key={list.id}>
             <div className="add-list-title">
-              <input
-                value={list.title}
-                onChange={(e) => setListTitle(e.target.value)}
-              ></input>
+              <h3>{list.title}</h3>
             </div>
             <Card list={list} cards={cards} setCards={setCards} />
           </div>
         );
       })}
-      <textarea
-        value={listTitle}
-        onChange={(e) => setListTitle(e.target.value)}
-        placeholder="Enter list title..."
-      ></textarea>
-      <button onClick={handleCreateList}>Add List</button>
-      <button>X</button>
+      <div className="add-new-list">
+        <textarea
+          value={listTitle}
+          onChange={(e) => setListTitle(e.target.value)}
+          placeholder="Enter list title..."
+        ></textarea>
+        <div>
+          <button className="add-btn" onClick={handleCreateList}>
+            Add List
+          </button>
+          <button className="cross-btn">{"\u00d7"}</button>
+        </div>
+      </div>
     </div>
   );
 }
