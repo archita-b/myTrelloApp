@@ -32,22 +32,25 @@ export default function List({ board, lists, setLists }) {
       {lists.map((list) => {
         return (
           <div className="list-box" key={list.id}>
-            <div className="add-list-title">
-              <div>{list.title}</div>
-            </div>
+            <div className="add-list-title">{list.title}</div>
             <Card list={list} cards={cards} setCards={setCards} />
           </div>
         );
       })}
-      <div className="add-new-list">
-        <button onClick={() => setDisplayForm(true)}>+ Add another list</button>
+
+      <div className="add-new-item">
+        <button className="newitem-btn" onClick={() => setDisplayForm(true)}>
+          + Add another list
+        </button>
+
         {displayForm && (
-          <form onSubmit={(e) => e.preventDefault()}>
-            <input
+          <form className="addlist-form" onSubmit={(e) => e.preventDefault()}>
+            <textarea
               value={listTitle}
               onChange={(e) => setListTitle(e.target.value)}
-            ></input>
-            <div className="add-list-btn">
+              placeholder="Enter list title..."
+            ></textarea>
+            <div>
               <button className="add-btn" onClick={handleCreateList}>
                 Add List
               </button>

@@ -13,14 +13,14 @@ function App() {
   }, []);
 
   return (
-    <>
+    <div className="app-container">
       <Header setBoards={setBoards} />
       <div>
         {boards.map((board) => {
           return <Board board={board} key={board.id} />;
         })}
       </div>
-    </>
+    </div>
   );
 }
 

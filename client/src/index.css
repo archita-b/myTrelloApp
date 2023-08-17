@@ -5,32 +5,52 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 .app-heading{
-  background: #bbb;
+  background: #aaa;
   padding: 1em;
   display: flex;
+}
+.board-heading{
+  background: #bbb;
+  padding: 1em;
+}
+.board-container{
+  background: #ccc;
+  height: 100vh;
 }
 .list-container {
   display: flex;
   flex-wrap: nowrap;
 }
 .card-container{
+  background: #eee;
   display: flex;
   flex-direction: column;
 }
 .list-box{
-  background: #eee;
+  background: #fff;
+  width: 200px;
+  min-height: 50px;
   margin: 1em;
   padding: 0.5em;
-  border-radius: 1em;
+  border-radius: 0.5em;
 }
 .add-card-title {
   background: #fff;
-  margin: 0.8em;
+  margin: 0.3em;
+  padding: 0.3em;
   border-radius: 0.5em;
+  cursor: pointer;
 }
-/* .add-item {
-  display: flex;
-} */
+.newitem-btn{
+  padding: 0.5em;
+  background: transparent;
+  border: none;
+  border-radius: 0.5em;
+  cursor: pointer;
+}
+.newitem-btn:hover{
+  background: #ddd;
+}
 .add-btn{
   background: blue;
   color: #fff;
@@ -43,4 +63,23 @@
   margin: 0.5em;
   font-size: 22px;
   color: #777;
+}
+/* .addlist-form{
+  background: #fff;
+} */
+.card-popup{
+  display: flex;
+  flex-direction: column;
+  padding: 0.5em;
+  height: 400px;
+  width: 300px;
+  position: absolute;
+  top: 25%;
+  right: 40%;
+  border: 1px solid black;
+  background: #aaa;
+}
+.popup-header{
+  display: flex;
+  justify-content: space-between;
 }

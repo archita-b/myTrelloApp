@@ -4,6 +4,7 @@ import { createCard, fetchCardsForList } from "../requests";
 export default function Card({ list, cards, setCards }) {
   const [cardTitle, setCardTitle] = useState("");
   const [displayForm, setDisplayForm] = useState(false);
+  const [isCardOpen, setIsCardOpen] = useState(false);
 
   useEffect(() => {
     if (list !== null) {
@@ -31,20 +32,54 @@ export default function Card({ list, cards, setCards }) {
         .filter((card) => card.listid === list.id)
         .map((card) => {
           return (
-            <div className="add-card-title" key={card.cardid}>
-              <div>{card.cardtitle}</div>
+            <div className="card-box" key={card.cardid}>
+              <div
+                className="add-card-title"
+                onClick={() => setIsCardOpen(true)}
+              >
+                {card.cardtitle}
+              </div>
+
+              {isCardOpen && (
+                <div className="card-popup">
+                  <header className="popup-header">
+                    <div>
+                      <h3>{card.cardtitle}</h3>
+                      <p>in list {list.title}</p>
+                    </div>
+
+                    <button
+                      className="cross-btn"
+                      onClick={() => setIsCardOpen(false)}
+                    >
+                      {"\u00d7"}
+                    </button>
+                  </header>
+                  <br />
+                  <br />
+                  <label>
+                    Description
+                    <br />
+                    <textarea placeholder="Add a more detailed description..."></textarea>
+                  </label>
+                </div>
+              )}
             </div>
           );
         })}
-      <div className="add-new-card">
-        <button onClick={() => setDisplayForm(true)}>+ Add a card</button>
+
+      <div className="add-new-item">
+        <button className="newitem-btn" onClick={() => setDisplayForm(true)}>
+          + Add a card
+        </button>
         {displayForm && (
           <form onSubmit={(e) => e.preventDefault()}>
-            <input
+            <textarea
               value={cardTitle}
               onChange={(e) => setCardTitle(e.target.value)}
-            ></input>
-            <div className="add-card-btn">
+              placeholder="Enter a title for this card..."
+            ></textarea>
+            <div>
               <button className="add-btn" onClick={handleCreateCard}>
                 Add card
               </button>
