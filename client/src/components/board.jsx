@@ -6,7 +6,7 @@ export default function Board({ board }) {
 
   return (
     <div className="board-container">
-      <h2>{board === null ? "" : board.title}</h2>
+      <div>{board === null ? "" : board.title}</div>
       <List board={board} lists={lists} setLists={setLists} />
     </div>
   );

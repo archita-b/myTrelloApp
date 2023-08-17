@@ -3,6 +3,7 @@ import { createCard, fetchCardsForList } from "../requests";
 
 export default function Card({ list, cards, setCards }) {
   const [cardTitle, setCardTitle] = useState("");
+  const [displayForm, setDisplayForm] = useState(false);
 
   useEffect(() => {
     if (list !== null) {
@@ -31,22 +32,31 @@ export default function Card({ list, cards, setCards }) {
         .map((card) => {
           return (
             <div className="add-card-title" key={card.cardid}>
-              <h4>{card.cardtitle}</h4>
+              <div>{card.cardtitle}</div>
             </div>
           );
         })}
       <div className="add-new-card">
-        <textarea
-          value={cardTitle}
-          onChange={(e) => setCardTitle(e.target.value)}
-          placeholder="Enter a title for this card..."
-        ></textarea>
-        <div>
-          <button className="add-btn" onClick={handleCreateCard}>
-            Add card
-          </button>
-          <button className="cross-btn">{"\u00d7"}</button>
-        </div>
+        <button onClick={() => setDisplayForm(true)}>+ Add a card</button>
+        {displayForm && (
+          <form onSubmit={(e) => e.preventDefault()}>
+            <input
+              value={cardTitle}
+              onChange={(e) => setCardTitle(e.target.value)}
+            ></input>
+            <div className="add-card-btn">
+              <button className="add-btn" onClick={handleCreateCard}>
+                Add card
+              </button>
+              <button
+                className="cross-btn"
+                onClick={() => setDisplayForm(false)}
+              >
+                {"\u00d7"}
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );

@@ -5,9 +5,10 @@ import { createList, fetchListsForBoard } from "../requests";
 export default function List({ board, lists, setLists }) {
   const [listTitle, setListTitle] = useState("");
   const [cards, setCards] = useState([]);
+  const [displayForm, setDisplayForm] = useState(false);
 
   useEffect(() => {
-    if (board !== 0) {
+    if (board !== null) {
       fetchListsForBoard(board.id).then((data) => {
         setLists(data);
       });
@@ -32,24 +33,33 @@ export default function List({ board, lists, setLists }) {
         return (
           <div className="list-box" key={list.id}>
             <div className="add-list-title">
-              <h3>{list.title}</h3>
+              <div>{list.title}</div>
             </div>
             <Card list={list} cards={cards} setCards={setCards} />
           </div>
         );
       })}
       <div className="add-new-list">
-        <textarea
-          value={listTitle}
-          onChange={(e) => setListTitle(e.target.value)}
-          placeholder="Enter list title..."
-        ></textarea>
-        <div>
-          <button className="add-btn" onClick={handleCreateList}>
-            Add List
-          </button>
-          <button className="cross-btn">{"\u00d7"}</button>
-        </div>
+        <button onClick={() => setDisplayForm(true)}>+ Add another list</button>
+        {displayForm && (
+          <form onSubmit={(e) => e.preventDefault()}>
+            <input
+              value={listTitle}
+              onChange={(e) => setListTitle(e.target.value)}
+            ></input>
+            <div className="add-list-btn">
+              <button className="add-btn" onClick={handleCreateList}>
+                Add List
+              </button>
+              <button
+                className="cross-btn"
+                onClick={() => setDisplayForm(false)}
+              >
+                {"\u00d7"}
+              </button>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );
