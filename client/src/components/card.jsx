@@ -5,6 +5,7 @@ export default function Card({ list, cards, setCards }) {
   const [cardTitle, setCardTitle] = useState("");
   const [displayForm, setDisplayForm] = useState(false);
   const [isCardOpen, setIsCardOpen] = useState(false);
+  const [popupcardid, setPopupcardid] = useState(null);
 
   useEffect(() => {
     if (list !== null) {
@@ -35,12 +36,16 @@ export default function Card({ list, cards, setCards }) {
             <div className="card-box" key={card.cardid}>
               <div
                 className="add-card-title"
-                onClick={() => setIsCardOpen(true)}
+                id={card.cardid}
+                onClick={(e) => {
+                  setPopupcardid(e.target.id);
+                  setIsCardOpen(true);
+                }}
               >
                 {card.cardtitle}
               </div>
 
-              {isCardOpen && (
+              {isCardOpen && card.cardid == popupcardid && (
                 <div className="card-popup">
                   <header className="popup-header">
                     <div>
@@ -58,7 +63,7 @@ export default function Card({ list, cards, setCards }) {
                   <br />
                   <br />
                   <label>
-                    Description
+                    Description:
                     <br />
                     <textarea placeholder="Add a more detailed description..."></textarea>
                   </label>

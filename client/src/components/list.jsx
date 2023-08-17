@@ -33,7 +33,7 @@ export default function List({ board, lists, setLists }) {
         return (
           <div className="list-box" key={list.id}>
             <div className="add-list-title">{list.title}</div>
-            <Card list={list} cards={cards} setCards={setCards} />
+            <Card list={list} cards={cards} setCards={setCards} key={cards} />
           </div>
         );
       })}
