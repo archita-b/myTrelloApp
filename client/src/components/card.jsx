@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
+import { Container, Draggable } from "react-smooth-dnd";
+import { applyDrag } from "../utils/dragDrop";
 import { createCard, fetchCardsForList } from "../requests";
 
 export default function Card({ list, cards, setCards }) {
   const [cardTitle, setCardTitle] = useState("");
   const [displayForm, setDisplayForm] = useState(false);
   const [isCardOpen, setIsCardOpen] = useState(false);
-  const [popupcardid, setPopupcardid] = useState(null);
+  const [poppedCardID, setPoppedCardID] = useState(null);
 
   useEffect(() => {
     if (list !== null) {
@@ -27,51 +29,69 @@ export default function Card({ list, cards, setCards }) {
     setCardTitle("");
   }
 
+  function onCardDrop(dropResult) {
+    let newCards = [...cards];
+    newCards = applyDrag(newCards, dropResult);
+    setCards(newCards);
+  }
+
   return (
     <div className="card-container">
-      {cards
-        .filter((card) => card.listid === list.id)
-        .map((card) => {
-          return (
-            <div className="card-box" key={card.cardid}>
-              <div
-                className="add-card-title"
-                id={card.cardid}
-                onClick={(e) => {
-                  setPopupcardid(e.target.id);
-                  setIsCardOpen(true);
-                }}
-              >
-                {card.cardtitle}
-              </div>
+      <Container
+        onDrop={onCardDrop}
+        dragHandleSelector=".list-box"
+        dropPlaceholder={{
+          animationDuration: 150,
+          showOnTop: true,
+          className: "cards-drop-preview",
+        }}
+      >
+        {cards
+          .filter((card) => card.listid === list.id)
+          .map((card) => {
+            return (
+              <Draggable key={card.cardid}>
+                <div className="card-box">
+                  <div
+                    className="add-card-title"
+                    id={card.cardid}
+                    onClick={(e) => {
+                      setPoppedCardID(e.target.id);
+                      setIsCardOpen(true);
+                    }}
+                  >
+                    {card.cardtitle}
+                  </div>
 
-              {isCardOpen && card.cardid == popupcardid && (
-                <div className="card-popup">
-                  <header className="popup-header">
-                    <div>
-                      <h3>{card.cardtitle}</h3>
-                      <p>in list {list.title}</p>
+                  {isCardOpen && card.cardid == poppedCardID && (
+                    <div className="card-popup">
+                      <header className="popup-header">
+                        <div>
+                          <h3>{card.cardtitle}</h3>
+                          <p>in list {list.title}</p>
+                        </div>
+
+                        <button
+                          className="cross-btn"
+                          onClick={() => setIsCardOpen(false)}
+                        >
+                          {"\u00d7"}
+                        </button>
+                      </header>
+                      <br />
+                      <br />
+                      <label>
+                        Description:
+                        <br />
+                        <textarea placeholder="Add a more detailed description..."></textarea>
+                      </label>
                     </div>
-
-                    <button
-                      className="cross-btn"
-                      onClick={() => setIsCardOpen(false)}
-                    >
-                      {"\u00d7"}
-                    </button>
-                  </header>
-                  <br />
-                  <br />
-                  <label>
-                    Description:
-                    <br />
-                    <textarea placeholder="Add a more detailed description..."></textarea>
-                  </label>
+                  )}
                 </div>
-              )}
-            </div>
-          );
-        })}
+              </Draggable>
+            );
+          })}
+      </Container>
 
       <div className="add-new-item">
         <button className="newitem-btn" onClick={() => setDisplayForm(true)}>

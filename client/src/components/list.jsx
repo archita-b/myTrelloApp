@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Container, Draggable } from "react-smooth-dnd";
+import { applyDrag } from "../utils/dragDrop";
 import Card from "./card";
 import { createList, fetchListsForBoard } from "../requests";
 
@@ -27,16 +29,40 @@ export default function List({ board, lists, setLists }) {
     setListTitle("");
   }
 
+  function onListDrop(dropResult) {
+    let newLists = [...lists];
+    newLists = applyDrag(newLists, dropResult);
+    setLists(newLists);
+  }
+
   return (
     <div className="list-container">
-      {lists.map((list) => {
-        return (
-          <div className="list-box" key={list.id}>
-            <div className="add-list-title">{list.title}</div>
-            <Card list={list} cards={cards} setCards={setCards} key={cards} />
-          </div>
-        );
-      })}
+      <Container
+        orientation="horizontal"
+        onDrop={onListDrop}
+        dragHandleSelector=".list-box"
+        dropPlaceholder={{
+          animationDuration: 150,
+          showOnTop: true,
+          className: "lists-drop-preview",
+        }}
+      >
+        {lists.map((list) => {
+          return (
+            <Draggable key={list.id}>
+              <div className="list-box">
+                <div className="add-list-title">{list.title}</div>
+                <Card
+                  list={list}
+                  cards={cards}
+                  setCards={setCards}
+                  key={cards}
+                />
+              </div>
+            </Draggable>
+          );
+        })}
+      </Container>
 
       <div className="add-new-item">
         <button className="newitem-btn" onClick={() => setDisplayForm(true)}>

@@ -18,6 +18,7 @@
   height: 100vh;
 }
 .list-container {
+  padding: 1em;
   display: flex;
   flex-wrap: nowrap;
 }
@@ -30,7 +31,7 @@
   background: #fff;
   width: 200px;
   min-height: 50px;
-  margin: 1em;
+  margin: 0 1em 0 1em;
   padding: 0.5em;
   border-radius: 0.5em;
 }
@@ -78,7 +79,7 @@
   padding: 0.5em;
   height: 500px;
   width: 450px;
-  position: absolute;
+  position: fixed;
   top: 15%;
   right: 30%;
   border: 1px solid black;
@@ -90,4 +91,13 @@
 }
 textarea{
   padding: 0.5em;
+}
+.card-ghost{
+  transition: transform 0.2s ease;
+  transform: rotateZ(5deg);
+  font-weight: bold;
+}
+.card-ghost-drop{
+  transition: transform 0.2s ease-in-out;
+  transform: rotateZ(0deg);
 }
