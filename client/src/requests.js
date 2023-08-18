@@ -42,13 +42,7 @@ export async function createList(title, boardId) {
   return data;
 }
 
-export async function createCard(title, listId) {
-  const newCard = {
-    title: title,
-    description: "",
-    duedate: null,
-    completed: false,
-  };
+export async function createCard(newCard, listId) {
   const res = await fetch(url + "/lists/" + listId + "/cards", {
     method: "POST",
     headers: {

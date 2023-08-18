@@ -18,7 +18,15 @@ export default function Card({ list, cards, setCards }) {
   }, [list]);
 
   function addCard(title) {
-    createCard(title, list.id).then((data) => {
+    const date = new Date().toISOString().split("T")[0];
+
+    const newCard = {
+      title: title,
+      description: "",
+      duedate: date,
+      completed: false,
+    };
+    createCard(newCard, list.id).then((data) => {
       setCards((currentCards) => [...currentCards, { ...data }]);
     });
   }

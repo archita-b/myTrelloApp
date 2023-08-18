@@ -39,7 +39,7 @@ export async function createCardForListDB(
   listId
 ) {
   const result = await pool.query(
-    "INSERT INTO trelloCards(title,description, duedate, completed,list_id) VALUES ($1,$2.$3,$4,$5) RETURNING *",
+    "INSERT INTO trelloCards(title,description, duedate, completed,list_id) VALUES ($1,$2,$3,$4,$5) RETURNING *",
     [title, description, duedate, completed, listId]
   );
   return result.rows[0];
