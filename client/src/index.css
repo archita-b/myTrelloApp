@@ -23,7 +23,6 @@
   flex-wrap: nowrap;
 }
 .card-container{
-  background: #eee;
   display: flex;
   flex-direction: column;
 }
@@ -34,17 +33,23 @@
   margin: 0 1em 0 1em;
   padding: 0.5em;
   border-radius: 0.5em;
+  box-shadow: 0.7px 0.7px rgba(0,0,0,0.5);
 }
 .add-list-title{
   font-weight: bold;
   margin-bottom: 0.5em;
 }
 .add-card-title {
-  background: #fff;
+  background: #eee;
   margin: 0.3em;
   padding: 0.3em;
+  border: 1px solid rgba(0,0,0,0.5);
   border-radius: 0.5em;
+  box-shadow: 0 0.7px rgba(0,0,0,0.5);
   cursor: pointer;
+}
+.add-card-title:hover{
+  background: #ddd;
 }
 .newitem-btn{
   padding: 0.5em;
@@ -67,8 +72,12 @@
   border: none;
   padding: 0.5em;
   font-size: 22px;
+  background: transparent;
   color: #777;
   cursor: pointer;
+}
+.cross-btn:hover{
+  color: #333;
 }
 .card-popup{
   display: flex;
