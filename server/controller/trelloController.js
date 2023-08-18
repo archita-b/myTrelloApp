@@ -32,9 +32,11 @@ export function createListForBoard(req, res) {
 }
 
 export function createCardForList(req, res) {
-  const title = req.body.title;
+  const { title, description, duedate, completed } = req.body;
   const listId = req.params.list_id;
-  createCardForListDB(title, listId).then((data) => res.json(data));
+  createCardForListDB(title, description, duedate, completed, listId).then(
+    (data) => res.json(data)
+  );
 }
 
 export function createBoard(req, res) {

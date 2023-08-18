@@ -31,10 +31,16 @@ export async function createListForBoardDB(title, boardId) {
   return result.rows[0];
 }
 
-export async function createCardForListDB(title, listId) {
+export async function createCardForListDB(
+  title,
+  description,
+  duedate,
+  completed,
+  listId
+) {
   const result = await pool.query(
-    "INSERT INTO trelloCards(title,list_id) VALUES ($1,$2) RETURNING *",
-    [title, listId]
+    "INSERT INTO trelloCards(title,description, duedate, completed,list_id) VALUES ($1,$2.$3,$4,$5) RETURNING *",
+    [title, description, duedate, completed, listId]
   );
   return result.rows[0];
 }

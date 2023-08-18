@@ -18,3 +18,12 @@ CREATE TABLE trelloCards (
 SELECT trelloCards.id as cardId, trelloLists.id as listId, trelloCards.title as cardTitle, trelloLists.title as listTitle
 FROM trelloCards 
 INNER JOIN trelloLists ON trelloCards.list_id=trelloLists.id
+
+CREATE TABLE trelloCards (
+    id SERIAL PRIMARY KEY,
+    list_id INTEGER REFERENCES trelloLists(id),
+    title VARCHAR(50) NOT NULL,
+    description TEXT,
+    duedate TIMESTAMP,
+    completed BOOLEAN DEFAULT FALSE
+);

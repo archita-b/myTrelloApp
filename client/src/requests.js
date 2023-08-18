@@ -43,12 +43,18 @@ export async function createList(title, boardId) {
 }
 
 export async function createCard(title, listId) {
+  const newCard = {
+    title: title,
+    description: "",
+    duedate: null,
+    completed: false,
+  };
   const res = await fetch(url + "/lists/" + listId + "/cards", {
     method: "POST",
     headers: {
       "Content-type": "Application/json",
     },
-    body: JSON.stringify({ title }),
+    body: JSON.stringify(newCard),
   });
   const data = await res.json();
   return data;

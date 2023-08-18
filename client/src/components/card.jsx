@@ -35,6 +35,8 @@ export default function Card({ list, cards, setCards }) {
     setCards(newCards);
   }
 
+  const today = new Date().toISOString().split("T")[0];
+
   return (
     <div className="card-container">
       <Container
@@ -78,6 +80,18 @@ export default function Card({ list, cards, setCards }) {
                           {"\u00d7"}
                         </button>
                       </header>
+                      <br />
+                      <br />
+                      <label>
+                        Due Date:
+                        <input type="date" value={card.duedate} min={today} />
+                      </label>
+                      <br />
+                      <br />
+                      <label>
+                        <input type="checkbox" checked={card.completed} />
+                        completed
+                      </label>
                       <br />
                       <br />
                       <label>
