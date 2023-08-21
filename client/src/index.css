@@ -16,7 +16,16 @@
 .board-container{
   background: #ccc;
   height: 100vh;
+  /* backdrop-filter: blur(20px); */
 }
+/* .board-container::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+} */
 .list-container {
   padding: 1em;
   display: flex;

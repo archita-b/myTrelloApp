@@ -2,47 +2,31 @@ import pool from "./database.js";
 
 export async function getBoardsDB() {
   const result = await pool.query("SELECT * FROM trelloBoard");
-  return result.rows;
+  if (result.rows !== null) return result.rows;
+  throw new Error("No boards found");
 }
-// console.log(await getBoardsDB());
 
 export async function getListsForBoardDB(boardId) {
   const result = await pool.query(
     "SELECT * FROM trelloLists WHERE board_id=$1",
     [boardId]
   );
-  return result.rows;
+  if (result.rows !== null) return result.rows;
+  throw new Error("No lists found");
 }
 
-export async function getCardsForListDB(boardId, listId) {
+export async function getCardsForBoardDB(boardId) {
   const result = await pool.query(
-    `SELECT trelloCards.id as cardId, trelloLists.id as listId, trelloCards.title as cardTitle, trelloLists.title as listTitle
-      FROM trelloCards 
-      INNER JOIN trelloLists ON trelloCards.list_id=trelloLists.id`
+    `SELECT trelloCards.id as cardId, trelloLists.id as listId, trelloCards.title as cardTitle,
+      trelloLists.title as listTitle,trelloCards.description,trelloCards.duedate,
+      trelloCards.completed
+      FROM trelloCards
+      INNER JOIN trelloLists ON trelloCards.list_id=trelloLists.id 
+      WHERE trelloLists.board_id=$1`,
+    [boardId]
   );
-  return result.rows;
-}
-
-export async function createListForBoardDB(title, boardId) {
-  const result = await pool.query(
-    "INSERT INTO trelloLists(title,board_id) VALUES ($1,$2) RETURNING *",
-    [title, boardId]
-  );
-  return result.rows[0];
-}
-
-export async function createCardForListDB(
-  title,
-  description,
-  duedate,
-  completed,
-  listId
-) {
-  const result = await pool.query(
-    "INSERT INTO trelloCards(title,description, duedate, completed,list_id) VALUES ($1,$2,$3,$4,$5) RETURNING *",
-    [title, description, duedate, completed, listId]
-  );
-  return result.rows[0];
+  if (result.rows !== null) return result.rows;
+  throw new Error("No cards found for board" + boardId);
 }
 
 export async function createBoardDB(title) {
@@ -50,18 +34,87 @@ export async function createBoardDB(title) {
     "INSERT INTO trelloBoard (title) VALUES ($1) RETURNING *",
     [title]
   );
+  if (result.rowCount !== 1) throw new Error("Error creating board");
   return result.rows[0];
 }
 
-export async function updateBoardDB(id, title) {
+export async function createListDB(title, boardId) {
   const result = await pool.query(
-    "INSERT INTO trelloBoard SET title=$1 WHERE id=$2 RETURNING *",
-    [title, id]
+    "INSERT INTO trelloLists(title,board_id) VALUES ($1,$2) RETURNING *",
+    [title, boardId]
   );
+  if (result.rowCount !== 1) throw new Error("Error creating list");
   return result.rows[0];
 }
 
-export async function deleteBoardDB(id) {
-  const result = await pool.query("DELETE FROM trelloBoard WHERE id=$1", [id]);
+export async function createCardDB(
+  title,
+  description,
+  duedate,
+  completed,
+  listId
+) {
+  const result = await pool.query(
+    "INSERT INTO trelloCards (title,description,duedate,completed,list_id) VALUES ($1,$2,$3,$4,$5) RETURNING *",
+    [title, description, duedate, completed, listId]
+  );
+  if (result.rowCount !== 1) throw new Error("Error creating card");
+  return result.rows[0];
+}
+
+export async function updateBoardDB(boardId, title) {
+  const result = await pool.query(
+    "UPDATE trelloBoard SET title=$1 WHERE id=$2 RETURNING *",
+    [title, boardId]
+  );
+  if (result.rowCount !== 1) throw new Error("Error updating board");
+  return result.rows[0];
+}
+
+export async function updateListDB(listId, title) {
+  const result = await pool.query(
+    "UPDATE trelloLists SET title=$1 WHERE id=$2 RETURNING *",
+    [title, listId]
+  );
+  if (result.rowCount !== 1) throw new Error("Error updating list");
+  return result.rows[0];
+}
+
+export async function updateCardDB(
+  title,
+  description,
+  duedate,
+  completed,
+  listId
+) {
+  const result = await pool.query(
+    "UPDATE trelloCards SET title=$1, description=$2, duedate=$3, completed=$4 WHERE list_id=$5 RETURNING *",
+    [title, description, duedate, completed, listId]
+  );
+  if (result.rowCount !== 1) throw new Error("Error updating card");
+  return result.rows[0];
+}
+
+export async function deleteBoardDB(boardId) {
+  const result = await pool.query("DELETE FROM trelloBoard WHERE id=$1", [
+    boardId,
+  ]);
+  if (result.rowCount !== 1) throw new Error("Error deleting board");
+  return result.rowCount;
+}
+
+export async function deleteListDB(listId) {
+  const result = await pool.query("DELETE FROM trelloLists WHERE id=$1", [
+    listId,
+  ]);
+  if (result.rowCount !== 1) throw new Error("Error deleting list");
+  return result.rowCount;
+}
+
+export async function deleteCardDB(cardId) {
+  const result = await pool.query("DELETE FROM trelloCards WHERE id=$1", [
+    cardId,
+  ]);
+  if (result.rowCount !== 1) throw new Error("Error deleting card");
   return result.rowCount;
 }

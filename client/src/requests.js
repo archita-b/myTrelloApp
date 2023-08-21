@@ -53,3 +53,16 @@ export async function createCard(newCard, listId) {
   const data = await res.json();
   return data;
 }
+
+export async function updateCard(newCard, listId, cardId) {
+  console.log("path=", url + "/lists/" + listId + "/cards/" + cardId);
+  const res = await fetch(url + "/lists/" + listId + "/cards/" + cardId, {
+    method: "PUT",
+    headers: {
+      "Content-type": "Application/json",
+    },
+    body: JSON.stringify(newCard),
+  });
+  const data = await res.json();
+  return data;
+}

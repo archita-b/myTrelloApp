@@ -1,56 +1,165 @@
 import {
   getBoardsDB,
-  getListsForBoardDB,
-  getCardsForListDB,
   createBoardDB,
   updateBoardDB,
   deleteBoardDB,
-  createCardForListDB,
-  createListForBoardDB,
+  getListsForBoardDB,
+  createListDB,
+  updateListDB,
+  deleteListDB,
+  getCardsForBoardDB,
+  createCardDB,
+  updateCardDB,
+  deleteCardDB,
 } from "../model/trelloModel.js";
 
-export function getBoard(req, res) {
+export async function getBoard(req, res) {
   // getBoardsDB().then(res.json.bind(res));
-  getBoardsDB().then((data) => res.json(data));
+  try {
+    const response = await getBoardsDB();
+    const data = res.json(response);
+    return data;
+  } catch (error) {
+    return res.json({ message: "Internal server error" });
+  }
 }
 
-export function getListsForBoard(req, res) {
-  const boardId = req.params.board_id;
-  getListsForBoardDB(boardId).then((data) => res.json(data));
+export async function getListsForBoard(req, res) {
+  try {
+    const boardId = req.params.board_id;
+    const response = await getListsForBoardDB(boardId);
+    const data = await res.json(response);
+    return data;
+  } catch (error) {
+    return res.json("Error getting lists for board" + boardId);
+  }
 }
 
-export function getCardsForList(req, res) {
-  const boardId = req.params.board_id;
-  const listId = req.params.list_id;
-  getCardsForListDB(boardId, listId).then((data) => res.json(data));
+export async function getCardsForBoard(req, res) {
+  try {
+    const boardId = req.params.board_id;
+    // const listId = req.params.list_id;
+    const response = await getCardsForBoardDB(boardId);
+    const data = await res.json(response);
+    return data;
+  } catch (error) {
+    return res.json("Error getting cards for board" + boardId);
+  }
 }
 
-export function createListForBoard(req, res) {
-  const title = req.body.title;
-  const boardId = req.params.board_id;
-  createListForBoardDB(title, boardId).then((data) => res.json(data));
+export async function createBoard(req, res) {
+  try {
+    const title = req.body.title;
+    if (title.trim() !== "") {
+      const response = await createBoardDB(title);
+      const data = await res.json(response);
+      return data;
+    }
+  } catch (error) {
+    return res.json({ message: "Error creating board" });
+  }
 }
 
-export function createCardForList(req, res) {
-  const { title, description, duedate, completed } = req.body;
-  const listId = req.params.list_id;
-  createCardForListDB(title, description, duedate, completed, listId).then(
-    (data) => res.json(data)
-  );
+export async function createList(req, res) {
+  try {
+    const title = req.body.title;
+    const boardId = req.params.board_id;
+    const response = await createListDB(title, boardId);
+    const data = await res.json(response);
+  } catch (error) {
+    return res.json({ message: "Error creating list" });
+  }
 }
 
-export function createBoard(req, res) {
-  const title = req.body.title;
-  createBoardDB(title).then((data) => res.json(data));
+export async function createCard(req, res) {
+  try {
+    const { title, description, duedate, completed } = req.body;
+    const listId = req.params.list_id;
+    const response = await createCardDB(
+      title,
+      description,
+      duedate,
+      completed,
+      listId
+    );
+    const data = await res.json(response);
+    return data;
+  } catch (error) {
+    return res.json({ message: "Error creating card" });
+  }
 }
 
-export function updateBoard(req, res) {
-  const { title } = req.body;
-  const boardId = req.params.id;
-  updateBoardDB(boardId, title).then((data) => res.json(data));
+export async function updateBoard(req, res) {
+  try {
+    const { title } = req.body;
+    const boardId = req.params.board_id;
+    const response = await updateBoardDB(boardId, title);
+    const data = res.json(response);
+    return data;
+  } catch (error) {
+    return res.json({ message: "Error updating board" });
+  }
 }
 
-export function deleteBoard(req, res) {
-  const boardId = req.params.id;
-  deleteBoardDB(boardId).then((data) => res.json(data));
+export async function updateList(req, res) {
+  try {
+    const { title } = req.body;
+    const listId = req.params.list_id;
+    const response = await updateListDB(listId, title);
+    const data = res.json(response);
+    return data;
+  } catch (error) {
+    return res.json({ message: "Error updating list" });
+  }
+}
+
+export async function updateCard(req, res) {
+  try {
+    const { title, description, duedate, completed } = req.body;
+    const cardId = req.params.card_id;
+    const response = await updateCardDB(
+      title,
+      description,
+      duedate,
+      completed,
+      listId
+    );
+    const data = res.json(response);
+    return data;
+  } catch (error) {
+    return res.json({ message: "Error updating card" });
+  }
+}
+
+export async function deleteBoard(req, res) {
+  try {
+    const boardId = req.params.board_id;
+    const response = await deleteBoardDB(boardId);
+    const data = await res.json(response);
+    return data;
+  } catch (error) {
+    return res.json({ message: "Error deleting board" });
+  }
+}
+
+export async function deleteList(req, res) {
+  try {
+    const listId = req.params.list_id;
+    const response = await deleteListDB(listId);
+    const data = await res.json(response);
+    return data;
+  } catch (error) {
+    return res.json({ message: "Error deleting list" });
+  }
+}
+
+export async function deleteCard(req, res) {
+  try {
+    const cardId = req.params.card_id;
+    const response = await deleteCardDB(cardId);
+    const data = await res.json(response);
+    return data;
+  } catch (error) {
+    return res.json({ message: "Error deleting card" });
+  }
 }

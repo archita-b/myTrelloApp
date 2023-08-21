@@ -1,28 +1,34 @@
 import express from "express";
 import {
   getBoard,
-  getListsForBoard,
-  getCardsForList,
   createBoard,
   updateBoard,
   deleteBoard,
-  createCardForList,
-  createListForBoard,
+  getListsForBoard,
+  createList,
+  updateList,
+  deleteList,
+  getCardsForBoard,
+  createCard,
+  updateCard,
+  deleteCard,
 } from "../controller/trelloController.js";
 
 const router = express.Router();
 
 router.route("/boards").get(getBoard).post(createBoard);
-// router.route("/boards/:id").put(updateBoard).delete(deleteBoard);
-
 router
-  .route("/boards/:board_id/lists")
+  .route("/boards/:board_id")
   .get(getListsForBoard)
-  .post(createListForBoard);
+  .put(updateBoard)
+  .delete(deleteBoard);
 
-router
-  .route("/lists/:list_id/cards")
-  .get(getCardsForList)
-  .post(createCardForList);
+router.route("/boards/:board_id/lists").get(getCardsForBoard).post(createList);
+
+router.route("/lists/:list_id").put(updateList).delete(deleteList); //check
+
+router.route("/lists/:list_id/cards").post(createCard);
+
+router.route("/cards/:card_id").put(updateCard).delete(deleteCard);
 
 export default router;

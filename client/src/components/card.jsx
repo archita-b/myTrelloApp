@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Container, Draggable } from "react-smooth-dnd";
 import { applyDrag } from "../utils/dragDrop";
 import { createCard, fetchCardsForList } from "../requests";
+import { updateCard } from "../requests";
 
 export default function Card({ list, cards, setCards }) {
   const [cardTitle, setCardTitle] = useState("");
@@ -77,7 +78,20 @@ export default function Card({ list, cards, setCards }) {
                     <div className="card-popup">
                       <header className="popup-header">
                         <div>
-                          <h3>{card.cardtitle}</h3>
+                          <input
+                            value={card.cardtitle}
+                            onChange={(e) => {
+                              setCardTitle(e.target.value);
+                              updateCard(
+                                {
+                                  ...card,
+                                  cardtitle: e.target.value,
+                                },
+                                card.listid,
+                                card.cardid
+                              );
+                            }}
+                          />
                           <p>in list {list.title}</p>
                         </div>
 
