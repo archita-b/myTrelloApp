@@ -1,0 +1,28 @@
+.add-card-title {
+    background: #eee;
+    margin: 0.3em;
+    padding: 0.3em;
+    border: 1px solid rgba(0,0,0,0.5);
+    border-radius: 0.5em;
+    box-shadow: 0 0.7px rgba(0,0,0,0.5);
+    cursor: pointer;
+  }
+  .add-card-title:hover{
+    background: #ddd;
+  }
+  .card-popup{
+    display: flex;
+    flex-direction: column;
+    padding: 0.5em;
+    height: 500px;
+    width: 450px;
+    position: fixed;
+    top: 15%;
+    right: 30%;
+    border: 1px solid black;
+    background: #aaa;
+  }
+  .popup-header{
+    display: flex;
+    justify-content: space-between;
+  }

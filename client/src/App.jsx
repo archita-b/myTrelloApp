@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchBoards } from "./requests";
-import Header from "./components/header";
-import Board from "./components/board";
+import Header from "./components/Header";
+import Board from "./components/Board";
 
 function App() {
   const [boards, setBoards] = useState([]);

@@ -25,9 +25,12 @@ export async function getCardsForBoardDB(boardId) {
       WHERE trelloLists.board_id=$1`,
     [boardId]
   );
-  if (result.rows !== null) return result.rows;
+  if (result.rows !== null) {
+    return result.rows;
+  }
   throw new Error("No cards found for board" + boardId);
 }
+// console.log(await getCardsForBoardDB(1));
 
 export async function createBoardDB(title) {
   const result = await pool.query(

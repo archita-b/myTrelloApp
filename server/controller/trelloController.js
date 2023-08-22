@@ -31,19 +31,18 @@ export async function getListsForBoard(req, res) {
     const data = await res.json(response);
     return data;
   } catch (error) {
-    return res.json("Error getting lists for board" + boardId);
+    return res.json({ message: "Error getting lists for board" });
   }
 }
 
 export async function getCardsForBoard(req, res) {
   try {
     const boardId = req.params.board_id;
-    // const listId = req.params.list_id;
     const response = await getCardsForBoardDB(boardId);
     const data = await res.json(response);
     return data;
   } catch (error) {
-    return res.json("Error getting cards for board" + boardId);
+    return res.json({ message: "Error getting cards for board" });
   }
 }
 

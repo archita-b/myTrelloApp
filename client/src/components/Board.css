@@ -1,0 +1,14 @@
+.board-heading{
+    background: #bbb;
+    padding: 1em;
+  }
+  .board-container{
+    background: #ccc;
+    height: 100vh;
+  }
+  .lists-container {
+    /* background: pink; */
+    padding: 1em;
+    display: flex;
+    flex-wrap: nowrap;
+  }
