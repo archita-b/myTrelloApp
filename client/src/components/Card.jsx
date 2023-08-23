@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./Card.css";
 import { updateCard } from "../requests";
 
-export default function Card({ list, card, setCardTitle }) {
+export default function Card({ list, card, updateCardTitle }) {
   const [isCardOpen, setIsCardOpen] = useState(false);
   const [poppedCardID, setPoppedCardID] = useState(null);
 
@@ -28,10 +28,9 @@ export default function Card({ list, card, setCardTitle }) {
               <input
                 value={card.cardtitle}
                 onChange={(e) => {
-                  setCardTitle(e.target.value);
-                  updateCard(
+                  updateCardTitle(
+                    e,
                     { ...card, cardtitle: e.target.value },
-                    card.listid,
                     card.cardid
                   );
                 }}

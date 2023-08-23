@@ -114,14 +114,14 @@ export async function updateList(req, res) {
 
 export async function updateCard(req, res) {
   try {
-    const { title, description, duedate, completed } = req.body;
+    const { cardtitle, description, duedate, completed } = req.body;
     const cardId = req.params.card_id;
     const response = await updateCardDB(
-      title,
+      cardtitle,
       description,
       duedate,
       completed,
-      listId
+      cardId
     );
     const data = res.json(response);
     return data;

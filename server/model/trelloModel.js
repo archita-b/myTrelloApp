@@ -88,11 +88,11 @@ export async function updateCardDB(
   description,
   duedate,
   completed,
-  listId
+  cardId
 ) {
   const result = await pool.query(
-    "UPDATE trelloCards SET title=$1, description=$2, duedate=$3, completed=$4 WHERE list_id=$5 RETURNING *",
-    [title, description, duedate, completed, listId]
+    "UPDATE trelloCards SET title=$1, description=$2, duedate=$3, completed=$4 WHERE id=$5 RETURNING *",
+    [title, description, duedate, completed, cardId]
   );
   if (result.rowCount !== 1) throw new Error("Error updating card");
   return result.rows[0];

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Card from "./Card";
 import AddNewCard from "./AddNewCard";
 import "./List.css";
-import { createCard, fetchCardsForBoard } from "../requests";
+import { createCard, fetchCardsForBoard, updateCard } from "../requests";
 
 export default function List({ board, list }) {
   const [cards, setCards] = useState([]);
@@ -22,14 +22,25 @@ export default function List({ board, list }) {
       completed: false,
     };
     createCard(newCard, list.id).then((data) => {
-      setCards((currentCard) => [...currentCard, { ...data }]);
+      setCards((currentCards) => [...currentCards, { ...data }]);
     });
   }
+
+  // function setttttcards(data) {
+  //   fetchCardsForBoard(board.id).then((data) => setCards(data));
+  // }
 
   function handleCreateCard() {
     if (cardTitle.trim() === "") return;
     addCard(cardTitle);
     setCardTitle("");
+  }
+
+  function updateCardTitle(e, newCard, cardId) {
+    setCardTitle(e.target.value);
+    updateCard(newCard, cardId).then((data) => {
+      setCards((currentCards) => [...currentCards, data]);
+    });
   }
 
   return (
@@ -43,7 +54,7 @@ export default function List({ board, list }) {
               <Card
                 list={list}
                 card={card}
-                setCardTitle={setCardTitle}
+                updateCardTitle={updateCardTitle}
                 key={card.cardid}
               />
             );
