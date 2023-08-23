@@ -26,10 +26,6 @@ export default function List({ board, list }) {
     });
   }
 
-  // function setttttcards(data) {
-  //   fetchCardsForBoard(board.id).then((data) => setCards(data));
-  // }
-
   function handleCreateCard() {
     if (cardTitle.trim() === "") return;
     addCard(cardTitle);

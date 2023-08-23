@@ -15,6 +15,11 @@ export async function fetchListsForBoard(boardId) {
 export async function fetchCardsForBoard(boardId) {
   const res = await fetch(url + "/boards/" + boardId + "/lists");
   const data = await res.json();
+  data.map((card) => {
+    const timestamp = new Date(card.duedate);
+    const date = timestamp.toISOString().split("T")[0];
+    card.duedate = date;
+  });
   return data;
 }
 
