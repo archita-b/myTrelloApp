@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Container, Draggable } from "react-smooth-dnd";
+import { applyDrag } from "../utils/dragDrop";
 import Card from "./Card";
 import AddNewCard from "./AddNewCard";
 import "./List.css";
@@ -32,29 +34,46 @@ export default function List({ board, list }) {
     setCardTitle("");
   }
 
-  function updateCardTitle(e, newCard, cardId) {
-    setCardTitle(e.target.value);
-    updateCard(newCard, cardId).then((data) => {
-      setCards((currentCards) => [...currentCards, data]);
-    });
+  // function updateCardTitle(e, newCard, cardId) {
+  //   setCardTitle(e.target.value);
+  //   updateCard(newCard, cardId).then((data) => {
+  //     setCards((currentCards) => [...currentCards, data]);
+  //   });
+  // }
+
+  function onCardDrop(dropResult) {
+    let newCards = [...cards];
+    newCards = applyDrag(newCards, dropResult);
+    setCards(newCards);
   }
 
   return (
     <div className="list-box">
       <div className="add-list-title">{list.title}</div>
       <div>
-        {cards
-          .filter((card) => card.listid === list.id)
-          .map((card) => {
-            return (
-              <Card
-                list={list}
-                card={card}
-                updateCardTitle={updateCardTitle}
-                key={card.cardid}
-              />
-            );
-          })}
+        <Container
+          onDrop={onCardDrop}
+          dragHandleSelector=".add-card-title"
+          dropPlaceholder={{
+            animationDuration: 150,
+            showOnTop: true,
+            className: "cards-drop-preview",
+          }}
+        >
+          {cards
+            .filter((card) => card.listid === list.id)
+            .map((card) => {
+              return (
+                <Draggable key={card.cardid}>
+                  <Card
+                    list={list}
+                    card={card}
+                    // updateCardTitle={updateCardTitle}
+                  />
+                </Draggable>
+              );
+            })}
+        </Container>
       </div>
       <AddNewCard
         cardTitle={cardTitle}

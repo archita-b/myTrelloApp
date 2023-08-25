@@ -2,12 +2,13 @@ import { useState } from "react";
 import "./Card.css";
 import { updateCard } from "../requests";
 
-export default function Card({ list, card, updateCardTitle }) {
+export default function Card({ list, card }) {
   const [isCardOpen, setIsCardOpen] = useState(false);
   const [poppedCardID, setPoppedCardID] = useState(null);
-  const [description, setDescription] = useState(card.description);
+  const [cardName, setCardName] = useState(card.cardtitle);
   const [duedate, setDuedate] = useState(card.duedate);
   const [checked, setChecked] = useState(card.completed);
+  const [description, setDescription] = useState(card.description);
 
   const today = new Date().toISOString().split("T")[0];
 
@@ -29,13 +30,14 @@ export default function Card({ list, card, updateCardTitle }) {
           <header className="popup-header">
             <div>
               <input
-                value={card.cardtitle}
+                value={cardName}
                 onChange={(e) => {
-                  updateCardTitle(
-                    e,
+                  updateCard(
                     { ...card, cardtitle: e.target.value },
                     card.cardid
-                  );
+                  ).then((data) => {
+                    setCardName(data.title);
+                  });
                 }}
               />
               <br />
@@ -55,8 +57,14 @@ export default function Card({ list, card, updateCardTitle }) {
               value={duedate}
               min={today}
               onChange={(e) => {
-                setDuedate(e.target.value);
-                updateCard({ ...card, duedate: e.target.value }, card.cardid);
+                updateCard(
+                  { ...card, duedate: e.target.value },
+                  card.cardid
+                ).then((data) => {
+                  const timestamp = new Date(data.duedate);
+                  const date = timestamp.toISOString().split("T")[0];
+                  setDuedate(date);
+                });
               }}
             />
           </label>
@@ -67,8 +75,11 @@ export default function Card({ list, card, updateCardTitle }) {
               type="checkbox"
               checked={checked}
               onChange={(e) => {
-                setChecked(e.target.value);
-                updateCard({ ...card, completed: e.target.value }, card.cardid);
+                setChecked(e.target.checked);
+                updateCard(
+                  { ...card, completed: e.target.checked },
+                  card.cardid
+                ).then((data) => setChecked(data.completed));
               }}
             />
             completed
@@ -85,7 +96,7 @@ export default function Card({ list, card, updateCardTitle }) {
                 updateCard(
                   { ...card, description: e.target.value },
                   card.cardid
-                );
+                ).then((data) => setDescription(data.description));
               }}
               placeholder="Add a more detailed description..."
             ></textarea>
