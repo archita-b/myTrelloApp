@@ -4,11 +4,17 @@ import { applyDrag } from "../utils/dragDrop";
 import Card from "./Card";
 import AddNewCard from "./AddNewCard";
 import "./List.css";
-import { createCard, fetchCardsForBoard, updateCard } from "../requests";
+import {
+  createCard,
+  deleteCard,
+  fetchCardsForBoard,
+  updateList,
+} from "../requests";
 
 export default function List({ board, list }) {
   const [cards, setCards] = useState([]);
   const [cardTitle, setCardTitle] = useState("");
+  const [listName, setListName] = useState(list.title);
 
   useEffect(() => {
     fetchCardsForBoard(board.id).then((data) => setCards(data));
@@ -34,12 +40,11 @@ export default function List({ board, list }) {
     setCardTitle("");
   }
 
-  // function updateCardTitle(e, newCard, cardId) {
-  //   setCardTitle(e.target.value);
-  //   updateCard(newCard, cardId).then((data) => {
-  //     setCards((currentCards) => [...currentCards, data]);
-  //   });
-  // }
+  function handleDeleteCard(cardId) {
+    deleteCard(cardId).then(() =>
+      setCards((cards) => cards.filter((card) => card.cardid !== cardId))
+    );
+  }
 
   function onCardDrop(dropResult) {
     let newCards = [...cards];
@@ -49,7 +54,20 @@ export default function List({ board, list }) {
 
   return (
     <div className="list-box">
-      <div className="add-list-title">{list.title}</div>
+      <div className="add-list-title">
+        <div>
+          <input
+            value={listName}
+            onChange={(e) =>
+              updateList({ ...list, title: e.target.value }, list.id).then(
+                (data) => {
+                  setListName(data.title);
+                }
+              )
+            }
+          ></input>
+        </div>
+      </div>
       <div>
         <Container
           onDrop={onCardDrop}
@@ -68,7 +86,7 @@ export default function List({ board, list }) {
                   <Card
                     list={list}
                     card={card}
-                    // updateCardTitle={updateCardTitle}
+                    handleDeleteCard={handleDeleteCard}
                   />
                 </Draggable>
               );

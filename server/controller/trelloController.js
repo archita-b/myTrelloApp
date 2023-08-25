@@ -90,7 +90,7 @@ export async function createCard(req, res) {
 
 export async function updateBoard(req, res) {
   try {
-    const { title } = req.body;
+    const { title } = req.body.title;
     const boardId = req.params.board_id;
     const response = await updateBoardDB(boardId, title);
     const data = res.json(response);
@@ -102,7 +102,7 @@ export async function updateBoard(req, res) {
 
 export async function updateList(req, res) {
   try {
-    const { title } = req.body;
+    const { title } = req.body.title;
     const listId = req.params.list_id;
     const response = await updateListDB(listId, title);
     const data = res.json(response);

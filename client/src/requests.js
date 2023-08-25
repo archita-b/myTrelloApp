@@ -84,7 +84,6 @@ export async function updateList(title, listId) {
 }
 
 export async function updateCard(newCard, cardId) {
-  // console.log("path=", url + "/cards/" + cardId);
   const res = await fetch(url + "/cards/" + cardId, {
     method: "PUT",
     headers: {
@@ -93,7 +92,6 @@ export async function updateCard(newCard, cardId) {
     body: JSON.stringify(newCard),
   });
   const data = await res.json();
-  // console.log("data=", data);
   return data;
 }
 

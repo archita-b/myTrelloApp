@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./Card.css";
 import { updateCard } from "../requests";
 
-export default function Card({ list, card }) {
+export default function Card({ list, card, handleDeleteCard }) {
   const [isCardOpen, setIsCardOpen] = useState(false);
   const [poppedCardID, setPoppedCardID] = useState(null);
   const [cardName, setCardName] = useState(card.cardtitle);
@@ -101,6 +101,13 @@ export default function Card({ list, card }) {
               placeholder="Add a more detailed description..."
             ></textarea>
           </label>
+          <br />
+          <br />
+          <div>
+            <button onClick={() => handleDeleteCard(card.cardid)}>
+              Delete this card
+            </button>
+          </div>
         </div>
       )}
     </div>

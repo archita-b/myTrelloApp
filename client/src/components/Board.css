@@ -2,9 +2,16 @@
     background: #bbb;
     padding: 1em;
   }
+  .board-heading input{
+    font-weight: bold;
+    font-size: 1.3em;
+    border: none;
+    background: transparent;
+  }
   .board-container{
     background: #ccc;
     height: 100vh;
+    position: relative;
   }
   .lists-container {
     /* background: pink; */
