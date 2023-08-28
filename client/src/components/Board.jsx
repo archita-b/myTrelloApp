@@ -12,7 +12,9 @@ export default function Board({ board }) {
   const [boardName, setBoardName] = useState(board.title);
 
   useEffect(() => {
-    fetchListsForBoard(board.id).then((data) => setLists(data));
+    fetchListsForBoard(board.id).then((data) => {
+      if (data) setLists(data);
+    });
   }, []);
 
   function addList(title) {
@@ -63,7 +65,7 @@ export default function Board({ board }) {
             .map((list) => {
               return (
                 <Draggable key={list.id}>
-                  <List board={board} list={list} />
+                  <List list={list} />
                 </Draggable>
               );
             })}

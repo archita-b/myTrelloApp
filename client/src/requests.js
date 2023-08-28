@@ -8,18 +8,10 @@ export async function fetchBoards() {
 
 export async function fetchListsForBoard(boardId) {
   const res = await fetch(url + "/boards/" + boardId);
-  const data = await res.json();
-  return data;
-}
 
-export async function fetchCardsForBoard(boardId) {
-  const res = await fetch(url + "/boards/" + boardId + "/lists");
+  if (res.status !== 200) return;
+
   const data = await res.json();
-  data.map((card) => {
-    const timestamp = new Date(card.duedate);
-    const date = timestamp.toISOString().split("T")[0];
-    card.duedate = date;
-  });
   return data;
 }
 

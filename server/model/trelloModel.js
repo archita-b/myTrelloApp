@@ -2,35 +2,21 @@ import pool from "./database.js";
 
 export async function getBoardsDB() {
   const result = await pool.query("SELECT * FROM trelloBoard");
-  if (result.rows !== null) return result.rows;
-  throw new Error("No boards found");
+  return result.rows;
 }
 
 export async function getListsForBoardDB(boardId) {
   const result = await pool.query(
-    "SELECT * FROM trelloLists WHERE board_id=$1",
+    `SELECT trellolists.*, json_agg(trellocards.*) AS cards
+    FROM trellolists
+    LEFT JOIN
+    trellocards ON trellolists.id = trellocards.list_id 
+    WHERE trellolists.board_id=$1
+    GROUP BY trellolists.id;`,
     [boardId]
   );
-  if (result.rows !== null) return result.rows;
-  throw new Error("No lists found");
+  return result.rows;
 }
-
-export async function getCardsForBoardDB(boardId) {
-  const result = await pool.query(
-    `SELECT trelloCards.id as cardId, trelloLists.id as listId, trelloCards.title as cardTitle,
-      trelloLists.title as listTitle,trelloCards.description,trelloCards.duedate,
-      trelloCards.completed
-      FROM trelloCards
-      INNER JOIN trelloLists ON trelloCards.list_id=trelloLists.id 
-      WHERE trelloLists.board_id=$1`,
-    [boardId]
-  );
-  if (result.rows !== null) {
-    return result.rows;
-  }
-  throw new Error("No cards found for board" + boardId);
-}
-// console.log(await getCardsForBoardDB(1));
 
 export async function createBoardDB(title) {
   const result = await pool.query(

@@ -8,7 +8,6 @@ import {
   createList,
   updateList,
   deleteList,
-  getCardsForBoard,
   createCard,
   updateCard,
   deleteCard,
@@ -17,15 +16,16 @@ import {
 const router = express.Router();
 
 router.route("/boards").get(getBoard).post(createBoard);
+
 router
   .route("/boards/:board_id")
   .get(getListsForBoard)
   .put(updateBoard)
   .delete(deleteBoard);
 
-router.route("/boards/:board_id/lists").get(getCardsForBoard).post(createList);
+router.route("/boards/:board_id/lists").post(createList);
 
-router.route("/lists/:list_id").put(updateList).delete(deleteList); //check
+router.route("/lists/:list_id").put(updateList).delete(deleteList);
 
 router.route("/lists/:list_id/cards").post(createCard);
 

@@ -3,10 +3,13 @@ import "./Card.css";
 import { updateCard } from "../requests";
 
 export default function Card({ list, card, handleDeleteCard }) {
+  const timestamp = new Date(card.duedate);
+  const date = timestamp.toISOString().split("T")[0];
+
   const [isCardOpen, setIsCardOpen] = useState(false);
   const [poppedCardID, setPoppedCardID] = useState(null);
-  const [cardName, setCardName] = useState(card.cardtitle);
-  const [duedate, setDuedate] = useState(card.duedate);
+  const [cardName, setCardName] = useState(card.title);
+  const [duedate, setDuedate] = useState(date);
   const [checked, setChecked] = useState(card.completed);
   const [description, setDescription] = useState(card.description);
 
@@ -16,28 +19,27 @@ export default function Card({ list, card, handleDeleteCard }) {
     <div className="card-box">
       <div
         className="add-card-title"
-        id={card.cardid}
+        id={card.id}
         onClick={(e) => {
           setPoppedCardID(e.target.id);
           setIsCardOpen(true);
         }}
       >
-        {card.cardtitle}
+        {card.title}
       </div>
 
-      {isCardOpen && card.cardid == poppedCardID && (
+      {isCardOpen && card.id == poppedCardID && (
         <div className="card-popup">
           <header className="popup-header">
             <div>
               <input
                 value={cardName}
                 onChange={(e) => {
-                  updateCard(
-                    { ...card, cardtitle: e.target.value },
-                    card.cardid
-                  ).then((data) => {
-                    setCardName(data.title);
-                  });
+                  updateCard({ ...card, title: e.target.value }, card.id).then(
+                    (data) => {
+                      setCardName(data.title);
+                    }
+                  );
                 }}
               />
               <br />
@@ -57,33 +59,34 @@ export default function Card({ list, card, handleDeleteCard }) {
               value={duedate}
               min={today}
               onChange={(e) => {
-                updateCard(
-                  { ...card, duedate: e.target.value },
-                  card.cardid
-                ).then((data) => {
-                  const timestamp = new Date(data.duedate);
-                  const date = timestamp.toISOString().split("T")[0];
-                  setDuedate(date);
-                });
+                updateCard({ ...card, duedate: e.target.value }, card.id).then(
+                  (data) => {
+                    const timestamp = new Date(data.duedate);
+                    const date = timestamp.toISOString().split("T")[0];
+                    setDuedate(date);
+                  }
+                );
               }}
             />
           </label>
           <br />
           <br />
-          <label>
-            <input
-              type="checkbox"
-              checked={checked}
-              onChange={(e) => {
-                setChecked(e.target.checked);
-                updateCard(
-                  { ...card, completed: e.target.checked },
-                  card.cardid
-                ).then((data) => setChecked(data.completed));
-              }}
-            />
-            completed
-          </label>
+          <div className="completed">
+            <label>
+              <input
+                type="checkbox"
+                checked={checked}
+                onChange={(e) => {
+                  setChecked(e.target.checked);
+                  updateCard(
+                    { ...card, completed: e.target.checked },
+                    card.id
+                  ).then((data) => setChecked(data.completed));
+                }}
+              />
+              completed
+            </label>
+          </div>
           <br />
           <br />
           <label>
@@ -95,7 +98,7 @@ export default function Card({ list, card, handleDeleteCard }) {
                 setDescription(e.target.value);
                 updateCard(
                   { ...card, description: e.target.value },
-                  card.cardid
+                  card.id
                 ).then((data) => setDescription(data.description));
               }}
               placeholder="Add a more detailed description..."
@@ -104,7 +107,7 @@ export default function Card({ list, card, handleDeleteCard }) {
           <br />
           <br />
           <div>
-            <button onClick={() => handleDeleteCard(card.cardid)}>
+            <button onClick={() => handleDeleteCard(card.id)}>
               Delete this card
             </button>
           </div>

@@ -7,20 +7,18 @@ import {
   createListDB,
   updateListDB,
   deleteListDB,
-  getCardsForBoardDB,
   createCardDB,
   updateCardDB,
   deleteCardDB,
 } from "../model/trelloModel.js";
 
 export async function getBoard(req, res) {
-  // getBoardsDB().then(res.json.bind(res));
   try {
     const response = await getBoardsDB();
-    const data = res.json(response);
+    const data = await res.json(response);
     return data;
   } catch (error) {
-    return res.json({ message: "Internal server error" });
+    return res.status(500).json({ message: "Internal server error" });
   }
 }
 
@@ -31,18 +29,7 @@ export async function getListsForBoard(req, res) {
     const data = await res.json(response);
     return data;
   } catch (error) {
-    return res.json({ message: "Error getting lists for board" });
-  }
-}
-
-export async function getCardsForBoard(req, res) {
-  try {
-    const boardId = req.params.board_id;
-    const response = await getCardsForBoardDB(boardId);
-    const data = await res.json(response);
-    return data;
-  } catch (error) {
-    return res.json({ message: "Error getting cards for board" });
+    return res.status(500).json({ message: "Error getting lists for board" });
   }
 }
 
@@ -114,10 +101,10 @@ export async function updateList(req, res) {
 
 export async function updateCard(req, res) {
   try {
-    const { cardtitle, description, duedate, completed } = req.body;
+    const { title, description, duedate, completed } = req.body;
     const cardId = req.params.card_id;
     const response = await updateCardDB(
-      cardtitle,
+      title,
       description,
       duedate,
       completed,
