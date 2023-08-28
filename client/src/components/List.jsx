@@ -25,7 +25,10 @@ export default function List({ list }) {
       completed: false,
     };
     createCard(newCard, list.id).then((data) => {
-      setCards((currentCards) => [...currentCards, { ...data }]);
+      setCards((currentCards) => {
+        if (currentCards) return [...currentCards, { ...data }];
+        return [{ ...data }];
+      });
     });
   }
 
@@ -37,7 +40,7 @@ export default function List({ list }) {
 
   function handleDeleteCard(cardId) {
     deleteCard(cardId).then(() =>
-      setCards((cards) => cards.filter((card) => card.cardid !== cardId))
+      setCards((cards) => cards.filter((card) => card.id !== cardId))
     );
   }
 
@@ -73,21 +76,23 @@ export default function List({ list }) {
             className: "cards-drop-preview",
           }}
         >
-          {cards
-            .filter((card) => {
-              if (card !== null) return card.list_id === list.id;
-            })
-            .map((card) => {
-              return (
-                <Draggable key={card.id}>
-                  <Card
-                    list={list}
-                    card={card}
-                    handleDeleteCard={handleDeleteCard}
-                  />
-                </Draggable>
-              );
-            })}
+          {cards === undefined
+            ? ""
+            : cards
+                .filter((card) => {
+                  if (card !== null) return card.list_id === list.id;
+                })
+                .map((card) => {
+                  return (
+                    <Draggable key={card.id}>
+                      <Card
+                        list={list}
+                        card={card}
+                        handleDeleteCard={handleDeleteCard}
+                      />
+                    </Draggable>
+                  );
+                })}
         </Container>
       </div>
       <AddNewCard

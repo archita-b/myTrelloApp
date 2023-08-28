@@ -19,7 +19,7 @@ export default function Board({ board }) {
 
   function addList(title) {
     createList(title, board.id).then((data) => {
-      setLists((currentList) => [...currentList, { ...data }]);
+      setLists((currentLists) => [...currentLists, { ...data }]);
     });
   }
 
