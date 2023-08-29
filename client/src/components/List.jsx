@@ -24,7 +24,11 @@ export default function List({ list }) {
       duedate: date,
       completed: false,
     };
-    createCard(newCard, list.id).then((data) => {
+    createCard(
+      newCard,
+      list.id,
+      cards.length === 0 ? null : cards[cards.length - 1].id
+    ).then((data) => {
       setCards((currentCards) => [...currentCards, { ...data }]);
     });
   }
@@ -42,14 +46,9 @@ export default function List({ list }) {
   }
 
   function onCardDrop(dropResult) {
-    if (!dropResult) return;
-    const { removedIndex, addedIndex, payload } = dropResult;
-    if (removedIndex !== null) {
-      const newCards = [...cards];
-      const removedCard = newCards.splice(removedIndex, 1);
-      newCards.splice(addedIndex, 0, removedCard);
-      setCards(newCards);
-    }
+    let newCards = [...cards];
+    newCards = applyDrag(newCards, dropResult);
+    setCards(newCards);
   }
 
   return (
@@ -83,9 +82,9 @@ export default function List({ list }) {
           {cards === undefined
             ? []
             : cards
-                .filter((card) => {
-                  if (card !== null) return card.list_id === list.id;
-                })
+                // .filter((card) => {
+                //   if (card !== null) return card.list_id === list.id;
+                // })
                 .map((card) => {
                   return (
                     <Draggable key={card.id}>

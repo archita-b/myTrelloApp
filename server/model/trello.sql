@@ -8,7 +8,7 @@ CREATE TABLE trelloboard (
 CREATE TABLE trellolists (
     id SERIAL PRIMARY KEY,
     board_id INTEGER REFERENCES trelloBoard(id) ON DELETE CASCADE,
-    prev_id INTEGER,
+    prev_list_id INTEGER DEFAULT NULL,
     title VARCHAR(50) NOT NULL
 );
 
@@ -16,6 +16,7 @@ CREATE TABLE trellolists (
 CREATE TABLE trellocards (
     id SERIAL PRIMARY KEY,
     list_id INTEGER REFERENCES trellolists(id) ON DELETE CASCADE,
+    prev_card_id INTEGER DEFAULT NULL,
     title VARCHAR(50) NOT NULL,
     description TEXT,
     duedate TIMESTAMP,

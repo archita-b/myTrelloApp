@@ -29,87 +29,94 @@ export default function Card({ list, card, handleDeleteCard }) {
       </div>
 
       {isCardOpen && card.id == poppedCardID && (
-        <div className="card-popup">
-          <header className="popup-header">
-            <div>
-              <input
-                value={cardName}
-                onChange={(e) => {
-                  updateCard({ ...card, title: e.target.value }, card.id).then(
-                    (data) => {
+        <div className="popup-container">
+          <div className="card-popup">
+            <header className="popup-header">
+              <div>
+                <input
+                  value={cardName}
+                  onChange={(e) => {
+                    updateCard(
+                      { ...card, title: e.target.value },
+                      card.id
+                    ).then((data) => {
                       setCardName(data.title);
-                    }
-                  );
-                }}
-              />
-              <br />
-              <p>in list {list.title}</p>
-            </div>
+                    });
+                  }}
+                />
+                <br />
+                <p>in list {list.title}</p>
+              </div>
 
-            <button className="cross-btn" onClick={() => setIsCardOpen(false)}>
-              {"\u00d7"}
-            </button>
-          </header>
-          <br />
-          <br />
-          <label>
-            Due Date:
-            <input
-              type="date"
-              value={duedate}
-              min={today}
-              onChange={(e) => {
-                updateCard({ ...card, duedate: e.target.value }, card.id).then(
-                  (data) => {
+              <button
+                className="cross-btn"
+                onClick={() => setIsCardOpen(false)}
+              >
+                {"\u00d7"}
+              </button>
+            </header>
+            <br />
+            <br />
+            <label>
+              Due Date:
+              <input
+                type="date"
+                value={duedate}
+                min={today}
+                onChange={(e) => {
+                  updateCard(
+                    { ...card, duedate: e.target.value },
+                    card.id
+                  ).then((data) => {
                     const timestamp = new Date(data.duedate);
                     const date = timestamp.toISOString().split("T")[0];
                     setDuedate(date);
-                  }
-                );
-              }}
-            />
-          </label>
-          <br />
-          <br />
-          <div className="completed">
-            <label>
-              <input
-                type="checkbox"
-                checked={checked}
-                onChange={(e) => {
-                  setChecked(e.target.checked);
-                  updateCard(
-                    { ...card, completed: e.target.checked },
-                    card.id
-                  ).then((data) => setChecked(data.completed));
+                  });
                 }}
               />
-              completed
             </label>
-          </div>
-          <br />
-          <br />
-          <label>
-            Description:
             <br />
-            <textarea
-              value={description}
-              onChange={(e) => {
-                setDescription(e.target.value);
-                updateCard(
-                  { ...card, description: e.target.value },
-                  card.id
-                ).then((data) => setDescription(data.description));
-              }}
-              placeholder="Add a more detailed description..."
-            ></textarea>
-          </label>
-          <br />
-          <br />
-          <div>
-            <button onClick={() => handleDeleteCard(card.id)}>
-              Delete this card
-            </button>
+            <br />
+            <div className="completed">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={(e) => {
+                    setChecked(e.target.checked);
+                    updateCard(
+                      { ...card, completed: e.target.checked },
+                      card.id
+                    ).then((data) => setChecked(data.completed));
+                  }}
+                />
+                completed
+              </label>
+            </div>
+            <br />
+            <br />
+            <label>
+              Description:
+              <br />
+              <textarea
+                value={description}
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                  updateCard(
+                    { ...card, description: e.target.value },
+                    card.id
+                  ).then((data) => setDescription(data.description));
+                }}
+                placeholder="Add a more detailed description..."
+              ></textarea>
+            </label>
+            <br />
+            <br />
+            <div>
+              <button onClick={() => handleDeleteCard(card.id)}>
+                Delete this card
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -27,25 +27,25 @@ export async function createBoard(title) {
   return data;
 }
 
-export async function createList(title, boardId) {
+export async function createList(title, boardId, prev_listId) {
   const res = await fetch(url + "/boards/" + boardId + "/lists", {
     method: "POST",
     headers: {
       "Content-type": "Application/json",
     },
-    body: JSON.stringify({ title }),
+    body: JSON.stringify({ title, prev_listId }),
   });
   const data = await res.json();
   return data;
 }
 
-export async function createCard(newCard, listId) {
+export async function createCard(newCard, listId, prev_cardId) {
   const res = await fetch(url + "/lists/" + listId + "/cards", {
     method: "POST",
     headers: {
       "Content-type": "Application/json",
     },
-    body: JSON.stringify(newCard),
+    body: JSON.stringify({ ...newCard, prev_cardId }),
   });
   const data = await res.json();
   return data;

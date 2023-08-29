@@ -29,10 +29,10 @@ export async function createBoardDB(title) {
   return result.rows[0];
 }
 
-export async function createListDB(title, boardId) {
+export async function createListDB(title, boardId, prev_listId) {
   const result = await pool.query(
-    "INSERT INTO trelloLists(title,board_id) VALUES ($1,$2) RETURNING *",
-    [title, boardId]
+    `INSERT INTO trelloLists(title,board_id,prev_id) VALUES ($1,$2,$3) RETURNING *`,
+    [title, boardId, prev_listId]
   );
   if (result.rowCount !== 1) throw new Error("Error creating list");
   return result.rows[0];
@@ -43,12 +43,13 @@ export async function createCardDB(
   description,
   duedate,
   completed,
-  listId
+  listId,
+  prev_cardId
 ) {
   const result = await pool.query(
-    `INSERT INTO trelloCards (title,description,duedate,completed,list_id) 
-    VALUES ($1,$2,$3,$4,$5) RETURNING *`,
-    [title, description, duedate, completed, listId]
+    `INSERT INTO trelloCards (title,description,duedate,completed,list_id,prev_card_id) 
+    VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
+    [title, description, duedate, completed, listId, prev_cardId]
   );
   if (result.rowCount !== 1) throw new Error("Error creating card");
   return result.rows[0];
