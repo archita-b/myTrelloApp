@@ -7,12 +7,14 @@ export async function getBoardsDB() {
 
 export async function getListsForBoardDB(boardId) {
   const result = await pool.query(
-    `SELECT trellolists.*, json_agg(trellocards.*) AS cards
+    `SELECT trellolists.*, 
+    COALESCE(json_agg(trellocards.*) FILTER (WHERE trellocards.list_id IS NOT NULL),'[]') 
+    AS cards
     FROM trellolists
     LEFT JOIN
     trellocards ON trellolists.id = trellocards.list_id 
     WHERE trellolists.board_id=$1
-    GROUP BY trellolists.id;`,
+    GROUP BY trellolists.id ORDER BY trellolists.id`,
     [boardId]
   );
   return result.rows;
@@ -44,7 +46,8 @@ export async function createCardDB(
   listId
 ) {
   const result = await pool.query(
-    "INSERT INTO trelloCards (title,description,duedate,completed,list_id) VALUES ($1,$2,$3,$4,$5) RETURNING *",
+    `INSERT INTO trelloCards (title,description,duedate,completed,list_id) 
+    VALUES ($1,$2,$3,$4,$5) RETURNING *`,
     [title, description, duedate, completed, listId]
   );
   if (result.rowCount !== 1) throw new Error("Error creating card");
@@ -77,7 +80,8 @@ export async function updateCardDB(
   cardId
 ) {
   const result = await pool.query(
-    "UPDATE trelloCards SET title=$1, description=$2, duedate=$3, completed=$4 WHERE id=$5 RETURNING *",
+    `UPDATE trelloCards SET title=$1, description=$2, duedate=$3, completed=$4 
+    WHERE id=$5 RETURNING *`,
     [title, description, duedate, completed, cardId]
   );
   if (result.rowCount !== 1) throw new Error("Error updating card");

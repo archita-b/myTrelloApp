@@ -25,10 +25,7 @@ export default function List({ list }) {
       completed: false,
     };
     createCard(newCard, list.id).then((data) => {
-      setCards((currentCards) => {
-        if (currentCards) return [...currentCards, { ...data }];
-        return [{ ...data }];
-      });
+      setCards((currentCards) => [...currentCards, { ...data }]);
     });
   }
 
@@ -45,9 +42,14 @@ export default function List({ list }) {
   }
 
   function onCardDrop(dropResult) {
-    let newCards = [...cards];
-    newCards = applyDrag(newCards, dropResult);
-    setCards(newCards);
+    if (!dropResult) return;
+    const { removedIndex, addedIndex, payload } = dropResult;
+    if (removedIndex !== null) {
+      const newCards = [...cards];
+      const removedCard = newCards.splice(removedIndex, 1);
+      newCards.splice(addedIndex, 0, removedCard);
+      setCards(newCards);
+    }
   }
 
   return (
@@ -68,7 +70,9 @@ export default function List({ list }) {
       </div>
       <div>
         <Container
+          groupName="list"
           onDrop={onCardDrop}
+          getChildPayload={(index) => cards[index]}
           dragHandleSelector=".add-card-title"
           dropPlaceholder={{
             animationDuration: 150,
@@ -77,7 +81,7 @@ export default function List({ list }) {
           }}
         >
           {cards === undefined
-            ? ""
+            ? []
             : cards
                 .filter((card) => {
                   if (card !== null) return card.list_id === list.id;

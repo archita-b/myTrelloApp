@@ -52,6 +52,7 @@ export async function createList(req, res) {
     const boardId = req.params.board_id;
     const response = await createListDB(title, boardId);
     const data = await res.json(response);
+    return data;
   } catch (error) {
     return res.json({ message: "Error creating list" });
   }
