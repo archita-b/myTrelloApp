@@ -77,7 +77,7 @@ export default function Card({ list, card, handleDeleteCard }) {
             </label>
             <br />
             <br />
-            <div className="completed">
+            <div>
               <label>
                 <input
                   type="checkbox"
@@ -90,7 +90,7 @@ export default function Card({ list, card, handleDeleteCard }) {
                     ).then((data) => setChecked(data.completed));
                   }}
                 />
-                completed
+                complete
               </label>
             </div>
             <br />
@@ -113,7 +113,10 @@ export default function Card({ list, card, handleDeleteCard }) {
             <br />
             <br />
             <div>
-              <button onClick={() => handleDeleteCard(card.id)}>
+              <button
+                className="del-card-btn"
+                onClick={() => handleDeleteCard(card.id)}
+              >
                 Delete this card
               </button>
             </div>

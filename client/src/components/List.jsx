@@ -6,7 +6,7 @@ import AddNewCard from "./AddNewCard";
 import "./List.css";
 import { createCard, deleteCard, updateList } from "../requests";
 
-export default function List({ list }) {
+export default function List({ list, handleDeleteList }) {
   const [cards, setCards] = useState([]);
   const [cardTitle, setCardTitle] = useState("");
   const [listName, setListName] = useState(list.title);
@@ -53,19 +53,25 @@ export default function List({ list }) {
 
   return (
     <div className="list-box">
-      <div className="add-list-title">
-        <div>
-          <input
-            value={listName}
-            onChange={(e) =>
-              updateList({ ...list, title: e.target.value }, list.id).then(
-                (data) => {
-                  setListName(data.title);
-                }
-              )
-            }
-          ></input>
-        </div>
+      <div className="list-title">
+        {/* <div> */}
+        <input
+          value={listName}
+          onChange={(e) =>
+            updateList({ ...list, title: e.target.value }, list.id).then(
+              (data) => {
+                setListName(data.title);
+              }
+            )
+          }
+        ></input>
+        <button
+          className="del-list-btn"
+          onClick={() => handleDeleteList(list.id)}
+        >
+          {"\u00d7"}
+        </button>
+        {/* </div> */}
       </div>
       <div>
         <Container
@@ -81,21 +87,17 @@ export default function List({ list }) {
         >
           {cards === undefined
             ? []
-            : cards
-                // .filter((card) => {
-                //   if (card !== null) return card.list_id === list.id;
-                // })
-                .map((card) => {
-                  return (
-                    <Draggable key={card.id}>
-                      <Card
-                        list={list}
-                        card={card}
-                        handleDeleteCard={handleDeleteCard}
-                      />
-                    </Draggable>
-                  );
-                })}
+            : cards.map((card) => {
+                return (
+                  <Draggable key={card.id}>
+                    <Card
+                      list={list}
+                      card={card}
+                      handleDeleteCard={handleDeleteCard}
+                    />
+                  </Draggable>
+                );
+              })}
         </Container>
       </div>
       <AddNewCard

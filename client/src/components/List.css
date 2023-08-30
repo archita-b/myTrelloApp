@@ -5,17 +5,29 @@
     margin: 0 1em 0 1em;
     padding: 0.5em;
     border-radius: 0.5em;
-    box-shadow: 0.7px 0.7px rgba(0,0,0,0.5);
-    /* position: relative; */
+    box-shadow: 1px 1px rgba(0,0,0,0.5);
   }
-  .add-list-title{
+  .list-title{
+    display: flex;
+    justify-content: space-between;
     margin-bottom: 0.5em;
+    cursor: pointer;
   }
-  .add-list-title input{
+  .list-title input{
     font-weight: bold;
     font-size: 1.2em;
     border: none;
     background: transparent;
-    width: 9em;
+    width: 5em;
+  }
+  .del-list-btn{
+    border: none;
+    background: none;
+  }
+  .del-list-btn:hover{
+    color: rgba(0,0,0,0.8);
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.2em;
   }
   

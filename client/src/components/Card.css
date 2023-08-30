@@ -30,7 +30,9 @@
     top: 15%;
     right: 30%;
     border: 1px solid black;
-    background: #aaa;
+    border-radius: 1em;
+    background: #eee;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   }
   .popup-header{
     display: flex;
@@ -43,6 +45,21 @@
     background: transparent;
   }
   label:has(input:checked){
-    color: #eee;
+    color: rgba(0, 0, 0, 0.3);
   }
+  .del-card-btn{
+    padding: 0.5em;
+    background-color: rgba(255, 0, 0, 0.7);
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 0.2em;
+    cursor: pointer;
+  }
+  .del-card-btn:hover{
+    background-color: rgba(255, 0, 0, 0.8);
+  }
+  /* .completed{
+    background: pink;
+  } */
   

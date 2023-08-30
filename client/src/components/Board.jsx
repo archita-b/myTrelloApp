@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import List from "./List";
 import "./Board.css";
-import { createList, fetchListsForBoard, updateBoard } from "../requests";
+import {
+  createList,
+  deleteList,
+  fetchListsForBoard,
+  updateBoard,
+} from "../requests";
 import AddNewItem from "./AddNewList";
 import { Container, Draggable } from "react-smooth-dnd";
 import { applyDrag } from "../utils/dragDrop";
@@ -32,6 +37,11 @@ export default function Board({ board }) {
     addList(listTitle);
     setListTitle("");
   }
+  function handleDeleteList(listId) {
+    deleteList(listId).then(() => {
+      setLists((lists) => lists.filter((list) => list.id !== listId));
+    });
+  }
 
   function onListDrop(dropResult) {
     let newLists = [...lists];
@@ -57,7 +67,7 @@ export default function Board({ board }) {
           orientation="horizontal"
           onDrop={onListDrop}
           getChildPayload={(index) => lists[index]}
-          dragHandleSelector=".add-list-title"
+          dragHandleSelector=".list-title"
           dropPlaceholder={{
             animationDuration: 150,
             showOnTop: true,
@@ -69,7 +79,7 @@ export default function Board({ board }) {
             .map((list) => {
               return (
                 <Draggable key={list.id}>
-                  <List list={list} />
+                  <List list={list} handleDeleteList={handleDeleteList} />
                 </Draggable>
               );
             })}
