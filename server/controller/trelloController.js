@@ -49,9 +49,8 @@ export async function createBoard(req, res) {
 export async function createList(req, res) {
   try {
     const title = req.body.title;
-    const prev_list_id = req.body.prev_listId;
     const boardId = req.params.board_id;
-    const response = await createListDB(title, boardId, prev_list_id);
+    const response = await createListDB(title, boardId);
     const data = await res.json(response);
     return data;
   } catch (error) {
@@ -61,16 +60,14 @@ export async function createList(req, res) {
 
 export async function createCard(req, res) {
   try {
-    // console.log("req in createcard=", req.body);
-    const { title, description, duedate, completed, prev_cardId } = req.body;
+    const { title, description, duedate, completed } = req.body;
     const listId = req.params.list_id;
     const response = await createCardDB(
       title,
       description,
       duedate,
       completed,
-      listId,
-      prev_cardId
+      listId
     );
     const data = await res.json(response);
     return data;

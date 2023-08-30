@@ -29,12 +29,33 @@ export async function createBoardDB(title) {
   return result.rows[0];
 }
 
-export async function createListDB(title, boardId, prev_listId) {
+export async function createListDB(title, boardId) {
+  await pool.query("BEGIN");
+
+  const max_id_result = (
+    await pool.query(`SELECT id FROM trellolists ORDER BY id DESC LIMIT 1`)
+  ).rows[0];
+
+  const max_id = max_id_result === undefined ? null : max_id_result.id;
+
+  (
+    await pool.query(
+      `INSERT INTO trelloLists(title,board_id) VALUES ($1,$2) RETURNING *`,
+      [title, boardId]
+    )
+  ).rows[0];
+
+  const new_max_id = (
+    await pool.query(`SELECT id FROM trellolists ORDER BY id DESC LIMIT 1`)
+  ).rows[0].id;
+
   const result = await pool.query(
-    `INSERT INTO trelloLists(title,board_id,prev_list_id) VALUES ($1,$2,$3) RETURNING *`,
-    [title, boardId, prev_listId]
+    `UPDATE trellolists SET prev_list_id=$1 
+    WHERE id=$2 RETURNING *`,
+    [max_id, new_max_id]
   );
-  if (result.rowCount !== 1) throw new Error("Error creating list");
+
+  await pool.query("COMMIT");
   return result.rows[0];
 }
 
@@ -43,15 +64,35 @@ export async function createCardDB(
   description,
   duedate,
   completed,
-  listId,
-  prev_cardId
+  listId
 ) {
+  await pool.query("BEGIN");
+
+  const max_id_result = (
+    await pool.query(`SELECT id FROM trellocards ORDER BY id DESC LIMIT 1`)
+  ).rows[0];
+
+  const max_id = max_id_result === undefined ? null : max_id_result.id;
+
+  (
+    await pool.query(
+      `INSERT INTO trelloCards (title,description,duedate,completed,list_id) 
+    VALUES ($1,$2,$3,$4,$5) RETURNING *`,
+      [title, description, duedate, completed, listId]
+    )
+  ).rows[0];
+
+  const new_max_id = (
+    await pool.query(`SELECT id FROM trellocards ORDER BY id DESC LIMIT 1`)
+  ).rows[0].id;
+
   const result = await pool.query(
-    `INSERT INTO trelloCards (title,description,duedate,completed,list_id,prev_card_id) 
-    VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
-    [title, description, duedate, completed, listId, prev_cardId]
+    `UPDATE trellocards SET prev_card_id=$1 
+    WHERE id=$2 RETURNING *`,
+    [max_id, new_max_id]
   );
-  if (result.rowCount !== 1) throw new Error("Error creating card");
+
+  await pool.query("COMMIT");
   return result.rows[0];
 }
 
@@ -82,7 +123,7 @@ export async function updateCardDB(
 ) {
   const result = await pool.query(
     `UPDATE trelloCards SET title=$1, description=$2, duedate=$3, completed=$4 
-    WHERE id=$5 RETURNING *`,
+    WHERE id=$5 RETURNING * ORDER BY id ASC`,
     [title, description, duedate, completed, cardId]
   );
   if (result.rowCount !== 1) throw new Error("Error updating card");
@@ -106,9 +147,22 @@ export async function deleteListDB(listId) {
 }
 
 export async function deleteCardDB(cardId) {
-  const result = await pool.query("DELETE FROM trelloCards WHERE id=$1", [
-    cardId,
-  ]);
-  if (result.rowCount !== 1) throw new Error("Error deleting card");
-  return result.rowCount;
+  await pool.query("BEGIN");
+
+  const idToBeUpdated = (
+    await pool.query(`SELECT prev_card_id FROM trellocards WHERE id=$1`, [
+      cardId,
+    ])
+  ).rows[0].prev_card_id;
+
+  await pool.query(`DELETE FROM trelloCards WHERE id=$1`, [cardId]);
+
+  const result = await pool.query(
+    `UPDATE trellocards SET prev_card_id=$1 WHERE prev_card_id=$2`,
+    [idToBeUpdated, cardId]
+  );
+
+  await pool.query("COMMIT");
+
+  if (result.rowCount === 1) return result.rows[0];
 }

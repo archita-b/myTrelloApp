@@ -23,11 +23,7 @@ export default function Board({ board }) {
   }, []);
 
   function addList(title) {
-    createList(
-      title,
-      board.id,
-      lists.length === 0 ? null : lists[lists.length - 1].id
-    ).then((data) => {
+    createList(title, board.id).then((data) => {
       setLists((currentLists) => [...currentLists, { ...data }]);
     });
   }

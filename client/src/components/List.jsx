@@ -24,12 +24,12 @@ export default function List({ list, handleDeleteList }) {
       duedate: date,
       completed: false,
     };
-    createCard(
-      newCard,
-      list.id,
-      cards.length === 0 ? null : cards[cards.length - 1].id
-    ).then((data) => {
-      setCards((currentCards) => [...currentCards, { ...data }]);
+    createCard(newCard, list.id).then((data) => {
+      setCards((currentCards) =>
+        currentCards === undefined
+          ? [{ ...data }]
+          : [...currentCards, { ...data }]
+      );
     });
   }
 
