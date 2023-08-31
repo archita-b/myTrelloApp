@@ -147,6 +147,6 @@ export async function deleteCard(req, res) {
     const data = await res.json(response);
     return data;
   } catch (error) {
-    return res.json({ message: "Error deleting card" });
+    return res.status(500).json({ message: "Error deleting card" });
   }
 }

@@ -1,10 +1,12 @@
 import pool from "./database.js";
 
+// get boards
 export async function getBoardsDB() {
   const result = await pool.query("SELECT * FROM trelloBoard");
   return result.rows;
 }
 
+// get lists
 export async function getListsForBoardDB(boardId) {
   const result = await pool.query(
     `SELECT trellolists.*, 
@@ -20,6 +22,7 @@ export async function getListsForBoardDB(boardId) {
   return result.rows;
 }
 
+// create board
 export async function createBoardDB(title) {
   const result = await pool.query(
     "INSERT INTO trelloBoard (title) VALUES ($1) RETURNING *",
@@ -29,6 +32,7 @@ export async function createBoardDB(title) {
   return result.rows[0];
 }
 
+// create list
 export async function createListDB(title, boardId) {
   await pool.query("BEGIN");
 
@@ -59,6 +63,7 @@ export async function createListDB(title, boardId) {
   return result.rows[0];
 }
 
+// create card
 export async function createCardDB(
   title,
   description,
@@ -96,6 +101,7 @@ export async function createCardDB(
   return result.rows[0];
 }
 
+//update board
 export async function updateBoardDB(boardId, title) {
   const result = await pool.query(
     "UPDATE trelloBoard SET title=$1 WHERE id=$2 RETURNING *",
@@ -105,6 +111,7 @@ export async function updateBoardDB(boardId, title) {
   return result.rows[0];
 }
 
+// update list
 export async function updateListDB(listId, title) {
   const result = await pool.query(
     "UPDATE trelloLists SET title=$1 WHERE id=$2 RETURNING *",
@@ -114,6 +121,7 @@ export async function updateListDB(listId, title) {
   return result.rows[0];
 }
 
+// update card
 export async function updateCardDB(
   title,
   description,
@@ -130,6 +138,7 @@ export async function updateCardDB(
   return result.rows[0];
 }
 
+// delete board
 export async function deleteBoardDB(boardId) {
   const result = await pool.query("DELETE FROM trelloBoard WHERE id=$1", [
     boardId,
@@ -138,15 +147,61 @@ export async function deleteBoardDB(boardId) {
   return result.rowCount;
 }
 
+// delete list
 export async function deleteListDB(listId) {
-  const result = await pool.query("DELETE FROM trelloLists WHERE id=$1", [
-    listId,
-  ]);
-  if (result.rowCount !== 1) throw new Error("Error deleting list");
-  return result.rowCount;
+  const max_list_id = (
+    await pool.query(`SELECT id FROM trellolists ORDER BY id DESC LIMIT 1`)
+  ).rows[0].id;
+
+  if (max_list_id == listId) {
+    return deleteLastList(listId, max_list_id);
+  }
+  return deleteIntermediateList(listId);
 }
 
+async function deleteIntermediateList(listId) {
+  await pool.query("BEGIN");
+
+  const idToBeUpdated = (
+    await pool.query(`SELECT prev_list_id FROM trellolists WHERE id=$1`, [
+      listId,
+    ])
+  ).rows[0].prev_list_id;
+
+  await pool.query(`DELETE FROM trellolists WHERE id=$1`, [listId]);
+
+  const result = await pool.query(
+    `UPDATE trellolists SET prev_list_id=$1 WHERE prev_list_id=$2 RETURNING *`,
+    [idToBeUpdated, listId]
+  );
+
+  await pool.query("COMMIT");
+
+  if (result.rowCount === 1) return result.rows[0];
+}
+
+async function deleteLastList(listId, max_id) {
+  if (max_id == listId) {
+    const result = await pool.query(`DELETE FROM trellolists WHERE id=$1`, [
+      listId,
+    ]);
+    return result.rowCount;
+  }
+}
+
+// delete card
 export async function deleteCardDB(cardId) {
+  const max_card_id = (
+    await pool.query(`SELECT id FROM trellocards ORDER BY id DESC LIMIT 1`)
+  ).rows[0].id;
+
+  if (max_card_id == cardId) {
+    return deleteLastCard(cardId, max_card_id);
+  }
+  return deleteIntermediateCard(cardId);
+}
+
+async function deleteIntermediateCard(cardId) {
   await pool.query("BEGIN");
 
   const idToBeUpdated = (
@@ -158,11 +213,20 @@ export async function deleteCardDB(cardId) {
   await pool.query(`DELETE FROM trelloCards WHERE id=$1`, [cardId]);
 
   const result = await pool.query(
-    `UPDATE trellocards SET prev_card_id=$1 WHERE prev_card_id=$2`,
+    `UPDATE trellocards SET prev_card_id=$1 WHERE prev_card_id=$2 RETURNING *`,
     [idToBeUpdated, cardId]
   );
 
   await pool.query("COMMIT");
 
   if (result.rowCount === 1) return result.rows[0];
+}
+
+async function deleteLastCard(cardId, max_id) {
+  if (max_id == cardId) {
+    const result = await pool.query(`DELETE FROM trellocards WHERE id=$1`, [
+      cardId,
+    ]);
+    return result.rowCount;
+  }
 }

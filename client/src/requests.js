@@ -107,6 +107,10 @@ export async function deleteCard(cardId) {
   const res = await fetch(url + "/cards/" + cardId, {
     method: "DELETE",
   });
+
+  if (res.status !== 200) return;
+
   const data = await res.json();
+  console.log("data=", data);
   return data;
 }

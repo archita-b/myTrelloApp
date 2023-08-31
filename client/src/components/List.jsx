@@ -54,7 +54,6 @@ export default function List({ list, handleDeleteList }) {
   return (
     <div className="list-box">
       <div className="list-title">
-        {/* <div> */}
         <input
           value={listName}
           onChange={(e) =>
@@ -71,7 +70,6 @@ export default function List({ list, handleDeleteList }) {
         >
           {"\u00d7"}
         </button>
-        {/* </div> */}
       </div>
       <div>
         <Container
