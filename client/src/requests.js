@@ -111,6 +111,34 @@ export async function deleteCard(cardId) {
   if (res.status !== 200) return;
 
   const data = await res.json();
-  console.log("data=", data);
+  return data;
+}
+
+export async function updateListsOrder(source_id, dest_id) {
+  const res = await fetch(url + "/lists/updateOrder", {
+    method: "PUT",
+    headers: {
+      "Content-type": "Application/json",
+    },
+    body: JSON.stringify({ source_id, dest_id }),
+  });
+  const data = await res.json();
+  return data;
+}
+
+export async function updateCardsOrder(
+  source_id,
+  dest_id,
+  source_list_id,
+  dest_list_id
+) {
+  const res = await fetch(url + "/cards/updateOrder", {
+    method: "PUT",
+    headers: {
+      "Content-type": "Application/json",
+    },
+    body: JSON.stringify({ source_id, dest_id, source_list_id, dest_list_id }),
+  });
+  const data = await res.json();
   return data;
 }

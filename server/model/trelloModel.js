@@ -131,7 +131,7 @@ export async function updateCardDB(
 ) {
   const result = await pool.query(
     `UPDATE trelloCards SET title=$1, description=$2, duedate=$3, completed=$4 
-    WHERE id=$5 RETURNING * ORDER BY id ASC`,
+    WHERE id=$5 RETURNING *`,
     [title, description, duedate, completed, cardId]
   );
   if (result.rowCount !== 1) throw new Error("Error updating card");
@@ -230,3 +230,87 @@ async function deleteLastCard(cardId, max_id) {
     return result.rowCount;
   }
 }
+
+// update lists order
+export async function updateListsOrderDB(source_id, dest_id) {
+  console.log("dest_id=", dest_id);
+  await pool.query("BEGIN");
+
+  const source_prev_list_id = (
+    await pool.query(`SELECT prev_list_id FROM trellolists WHERE id=$1`, [
+      source_id,
+    ])
+  ).rows[0].prev_list_id;
+
+  const dest_prev_list_id = (
+    await pool.query(`SELECT prev_list_id FROM trellolists WHERE id=$1`, [
+      dest_id,
+    ])
+  ).rows[0].prev_list_id;
+
+  await pool.query(`UPDATE trellolists SET prev_list_id=$1 WHERE id=$2`, [
+    source_prev_list_id,
+    dest_id,
+  ]);
+
+  await pool.query(
+    `UPDATE trellolists SET prev_list_id=$1 WHERE prev_list_id=$2`,
+    [dest_prev_list_id, dest_id]
+  );
+
+  await pool.query(`UPDATE trellolists SET prev_list_id=$1 WHERE id=$2`, [
+    dest_id,
+    source_id,
+  ]);
+
+  const result = await pool.query(`SELECT * FROM trellolists`);
+
+  await pool.query("COMMIT");
+
+  return result.rows;
+}
+// console.log(await updateListsOrderDB(54, 56));
+
+// update cards order
+export async function updateCardsOrderDB(
+  source_id,
+  dest_id,
+  source_list_id,
+  dest_list_id
+) {
+  await pool.query("BEGIN");
+
+  const source_prev_card_id = (
+    await pool.query(`SELECT prev_card_id FROM trellocards WHERE id=$1`, [
+      source_id,
+    ])
+  ).rows[0].prev_card_id;
+
+  const dest_prev_card_id = (
+    await pool.query(`SELECT prev_card_id FROM trellocards WHERE id=$1`, [
+      dest_id,
+    ])
+  ).rows[0].prev_card_id;
+
+  await pool.query(
+    `UPDATE trellocards SET list_id=$1, prev_card_id=$2 WHERE id=$3`,
+    [dest_list_id, source_prev_card_id, dest_id]
+  );
+
+  await pool.query(
+    `UPDATE trellocards SET prev_card_id=$1 WHERE prev_card_id=$2`,
+    [dest_prev_card_id, dest_id]
+  );
+
+  await pool.query(`UPDATE trellocards SET prev_card_id=$1 WHERE id=$2`, [
+    dest_id,
+    source_id,
+  ]);
+
+  const result = await pool.query(`SELECT * FROM trellocards`);
+
+  await pool.query("COMMIT");
+
+  return result.rows;
+}
+// console.log(await updateCardsOrderDB(56, 58, 56, 54));
