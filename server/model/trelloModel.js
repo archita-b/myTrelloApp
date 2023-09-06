@@ -34,13 +34,13 @@ export async function createBoardDB(title) {
 
 // create list
 export async function createListDB(title, boardId) {
+  const last_list_id = (
+    await pool.query(`SELECT last_list_id FROM trelloboard WHERE id=$1`, [
+      boardId,
+    ])
+  ).rows[0].last_list_id;
+
   await pool.query("BEGIN");
-
-  const max_id_result = (
-    await pool.query(`SELECT id FROM trellolists ORDER BY id DESC LIMIT 1`)
-  ).rows[0];
-
-  const max_id = max_id_result === undefined ? null : max_id_result.id;
 
   (
     await pool.query(
@@ -49,15 +49,16 @@ export async function createListDB(title, boardId) {
     )
   ).rows[0];
 
-  const new_max_id = (
+  const max_id = (
     await pool.query(`SELECT id FROM trellolists ORDER BY id DESC LIMIT 1`)
   ).rows[0].id;
 
   const result = await pool.query(
-    `UPDATE trellolists SET prev_list_id=$1 
-    WHERE id=$2 RETURNING *`,
-    [max_id, new_max_id]
+    `UPDATE trellolists SET prev_list_id=$1 WHERE id=$2 RETURNING *`,
+    [last_list_id, max_id]
   );
+
+  await pool.query(`UPDATE trelloboard SET last_list_id=$1`, [max_id]);
 
   await pool.query("COMMIT");
   return result.rows[0];
@@ -71,31 +72,33 @@ export async function createCardDB(
   completed,
   listId
 ) {
+  const last_card_id = (
+    await pool.query(`SELECT last_card_id FROM trellolists WHERE id=$1`, [
+      listId,
+    ])
+  ).rows[0].id;
+
   await pool.query("BEGIN");
-
-  const max_id_result = (
-    await pool.query(`SELECT id FROM trellocards ORDER BY id DESC LIMIT 1`)
-  ).rows[0];
-
-  const max_id = max_id_result === undefined ? null : max_id_result.id;
 
   (
     await pool.query(
       `INSERT INTO trelloCards (title,description,duedate,completed,list_id) 
-    VALUES ($1,$2,$3,$4,$5) RETURNING *`,
+       VALUES ($1,$2,$3,$4,$5) RETURNING *`,
       [title, description, duedate, completed, listId]
     )
   ).rows[0];
 
-  const new_max_id = (
+  const max_id = (
     await pool.query(`SELECT id FROM trellocards ORDER BY id DESC LIMIT 1`)
   ).rows[0].id;
 
   const result = await pool.query(
     `UPDATE trellocards SET prev_card_id=$1 
     WHERE id=$2 RETURNING *`,
-    [max_id, new_max_id]
+    [last_card_id, max_id]
   );
+
+  await pool.query(`UPDATE trellolists SET last_card_id=$1`, [max_id]);
 
   await pool.query("COMMIT");
   return result.rows[0];
@@ -149,24 +152,30 @@ export async function deleteBoardDB(boardId) {
 
 // delete list
 export async function deleteListDB(listId) {
-  const max_list_id = (
-    await pool.query(`SELECT id FROM trellolists ORDER BY id DESC LIMIT 1`)
-  ).rows[0].id;
+  const boardId = (
+    await pool.query(`SELECT board_id FROM trellolists WHERE id=$1`, [listId])
+  ).rows[0].board_id;
 
-  if (max_list_id == listId) {
-    return deleteLastList(listId, max_list_id);
+  const last_list_id = (
+    await pool.query(`SELECT last_list_id FROM trelloboard WHERE id=$1`, [
+      boardId,
+    ])
+  ).rows[0].last_list_id;
+
+  if (listId == last_list_id) {
+    return deleteLastList(listId, boardId);
   }
   return deleteIntermediateList(listId);
 }
 
 async function deleteIntermediateList(listId) {
-  await pool.query("BEGIN");
-
   const idToBeUpdated = (
     await pool.query(`SELECT prev_list_id FROM trellolists WHERE id=$1`, [
       listId,
     ])
   ).rows[0].prev_list_id;
+
+  await pool.query("BEGIN");
 
   await pool.query(`DELETE FROM trellolists WHERE id=$1`, [listId]);
 
@@ -180,23 +189,41 @@ async function deleteIntermediateList(listId) {
   if (result.rowCount === 1) return result.rows[0];
 }
 
-async function deleteLastList(listId, max_id) {
-  if (max_id == listId) {
-    const result = await pool.query(`DELETE FROM trellolists WHERE id=$1`, [
+async function deleteLastList(listId, boardId) {
+  const prev_list_id = (
+    await pool.query(`SELECT prev_list_id FROM trellolists WHERE id=$1`, [
       listId,
-    ]);
-    return result.rowCount;
-  }
+    ])
+  ).rows[0].prev_list_id;
+
+  await pool.query("BEGIN");
+
+  const result = await pool.query(`DELETE FROM trellolists WHERE id=$1`, [
+    listId,
+  ]);
+  await pool.query(`UPDATE trelloboard SET last_list_id=$1 WHERE id=$2`, [
+    prev_list_id,
+    boardId,
+  ]);
+
+  await pool.query("COMMIT");
+  return result.rowCount;
 }
 
 // delete card
 export async function deleteCardDB(cardId) {
-  const max_card_id = (
-    await pool.query(`SELECT id FROM trellocards ORDER BY id DESC LIMIT 1`)
+  const listId = (
+    await pool.query(`SELECT list_id FROM trellocards WHERE id=$1`, [cardId])
+  ).rows[0].list_id;
+
+  const last_card_id = (
+    await pool.query(`SELECT last_card_id FROM trellolists WHERE id=$1`, [
+      listId,
+    ])
   ).rows[0].id;
 
-  if (max_card_id == cardId) {
-    return deleteLastCard(cardId, max_card_id);
+  if (cardId == last_card_id) {
+    return deleteLastCard(cardId, listId);
   }
   return deleteIntermediateCard(cardId);
 }
@@ -222,54 +249,119 @@ async function deleteIntermediateCard(cardId) {
   if (result.rowCount === 1) return result.rows[0];
 }
 
-async function deleteLastCard(cardId, max_id) {
-  if (max_id == cardId) {
-    const result = await pool.query(`DELETE FROM trellocards WHERE id=$1`, [
+async function deleteLastCard(cardId, listId) {
+  const prev_card_id = (
+    await pool.query(`SELECT prev_card_id FROM trellocards WHERE id=$1`, [
       cardId,
-    ]);
-    return result.rowCount;
-  }
+    ])
+  ).rows[0].prev_card_id;
+
+  await pool.query("BEGIN");
+
+  const result = await pool.query(`DELETE FROM trellocards WHERE id=$1`, [
+    cardId,
+  ]);
+
+  await pool.query(`UPDATE trellolists SET last_card_id=$1 WHERE id=$2`, [
+    prev_card_id,
+    listId,
+  ]);
+
+  await pool.query("COMMIT");
+  return result.rowCount;
 }
 
 // update lists order
 export async function updateListsOrderDB(source_id, dest_id) {
-  console.log("dest_id=", dest_id);
-  await pool.query("BEGIN");
-
   const source_prev_list_id = (
-    await pool.query(`SELECT prev_list_id FROM trellolists WHERE id=$1`, [
-      source_id,
-    ])
+    await pool.query(
+      `SELECT prev_list_id FROM trellolists WHERE id=$1`,
+      source_id
+    )
   ).rows[0].prev_list_id;
 
   const dest_prev_list_id = (
-    await pool.query(`SELECT prev_list_id FROM trellolists WHERE id=$1`, [
-      dest_id,
-    ])
+    await pool.query(
+      `SELECT prev_list_id FROM trellolists WHERE id=$1`,
+      dest_id
+    )
   ).rows[0].prev_list_id;
 
-  await pool.query(`UPDATE trellolists SET prev_list_id=$1 WHERE id=$2`, [
+  const last_list_id = (
+    await pool.query(
+      `SELECT last_list_id FROM trelloboard WHERE id=(SELECT board_id FROM trellolists WHERE id=$1)`,
+      [source_id]
+    )
+  ).rows[0].last_list_id;
+
+  if (source_id == last_list_id) {
+    return lastListMoved(
+      source_id,
+      dest_id,
+      source_prev_list_id,
+      dest_prev_list_id,
+      last_list_id
+    );
+  }
+  return intermediateListMoved(
+    source_id,
+    dest_id,
     source_prev_list_id,
+    dest_prev_list_id
+  );
+}
+
+async function intermediateListMoved(
+  source_id,
+  dest_id,
+  source_prev_id,
+  dest_prev_id
+) {
+  await pool.query("BEGIN");
+
+  await pool.query(`UPDATE trellolists SET prev_list_id=$1 WHERE id=$2`, [
+    dest_prev_id,
+    source_id,
+  ]);
+  await pool.query(
+    `UPDATE trellolists SET prev_list_id=$1 WHERE prev_list_id=$2`,
+    [source_prev_id, source_id]
+  );
+  await pool.query(`UPDATE trellolists SET prev_list_id=$1 WHERE id=$2`, [
+    source_id,
     dest_id,
   ]);
 
-  await pool.query(
-    `UPDATE trellolists SET prev_list_id=$1 WHERE prev_list_id=$2`,
-    [dest_prev_list_id, dest_id]
-  );
+  await pool.query("COMMIT");
+  // return result.rows;
+}
+
+async function lastListMoved(
+  source_id,
+  dest_id,
+  source_prev_id,
+  dest_prev_id,
+  last_id
+) {
+  await pool.query("BEGIN");
 
   await pool.query(`UPDATE trellolists SET prev_list_id=$1 WHERE id=$2`, [
-    dest_id,
+    dest_prev_id,
     source_id,
   ]);
 
-  const result = await pool.query(`SELECT * FROM trellolists`);
+  await pool.query(`UPDATE trellolists SET prev_list_id=$1 WHERE id=$2`, [
+    source_id,
+    dest_id,
+  ]);
+
+  await pool.query(`UPDATE trelloboard SET last_id=$1 WHERE id=$2`, [
+    source_prev_id,
+    source_prev_id,
+  ]);
 
   await pool.query("COMMIT");
-
-  return result.rows;
 }
-// console.log(await updateListsOrderDB(54, 56));
 
 // update cards order
 export async function updateCardsOrderDB(
@@ -278,39 +370,117 @@ export async function updateCardsOrderDB(
   source_list_id,
   dest_list_id
 ) {
-  await pool.query("BEGIN");
-
   const source_prev_card_id = (
-    await pool.query(`SELECT prev_card_id FROM trellocards WHERE id=$1`, [
-      source_id,
-    ])
+    await pool.query(
+      `SELECT prev_card_id FROM trellocards WHERE id=$1`,
+      source_id
+    )
   ).rows[0].prev_card_id;
 
   const dest_prev_card_id = (
-    await pool.query(`SELECT prev_card_id FROM trellocards WHERE id=$1`, [
-      dest_id,
-    ])
+    await pool.query(
+      `SELECT prev_card_id FROM trellocards WHERE id=$1`,
+      dest_id
+    )
   ).rows[0].prev_card_id;
 
-  await pool.query(
-    `UPDATE trellocards SET list_id=$1, prev_card_id=$2 WHERE id=$3`,
-    [dest_list_id, source_prev_card_id, dest_id]
-  );
+  const source_last_card_id = (
+    await pool.query(
+      `SELECT last_card_id FROM trellolists WHERE id=(SELECT list_id FROM trellocards WHERE id=$1)`,
+      [source_id]
+    )
+  ).rows[0].last_card_id;
 
+  const dest_last_card_id = (
+    await pool.query(
+      `SELECT last_card_id FROM trellolists WHERE id=(SELECT list_id FROM trellocards WHERE id=$1)`,
+      [dest_id]
+    )
+  ).rows[0].last_card_id;
+
+  if (source_id != source_last_card_id && dest_id != dest_last_card_id) {
+    return intermediateCardMoved(
+      source_id,
+      dest_id,
+      source_list_id,
+      dest_list_id,
+      source_prev_card_id,
+      dest_prev_card_id
+    );
+  }
+  return lastCardMoved(
+    source_id,
+    dest_id,
+    source_list_id,
+    dest_list_id,
+    source_prev_card_id,
+    dest_prev_card_id,
+    source_last_card_id,
+    dest_last_card_id
+  );
+}
+
+async function intermediateCardMoved(
+  source_id,
+  dest_id,
+  source_list_id,
+  dest_list_id,
+  source_prev_id,
+  dest_prev_id
+) {
+  await pool.query("BEGIN");
+
+  await pool.query(
+    `UPDATE trellocards SET list_id=$1,prev_card_id=$2 WHERE id=$3`,
+    [dest_list_id, dest_prev_id, source_id]
+  );
   await pool.query(
     `UPDATE trellocards SET prev_card_id=$1 WHERE prev_card_id=$2`,
-    [dest_prev_card_id, dest_id]
+    [source_prev_id, source_id]
   );
+  await pool.query(`UPDATE trellocards SET prev_card_id=$1 WHERE id=$2`, [
+    source_id,
+    dest_id,
+  ]);
+
+  await pool.query("COMMIT");
+}
+
+async function lastCardMoved(
+  source_id,
+  dest_id,
+  source_list_id,
+  dest_list_id,
+  source_prev_id,
+  dest_prev_id,
+  source_last_id,
+  dest_last_id
+) {
+  // await pool.query("BEGIN");
 
   await pool.query(`UPDATE trellocards SET prev_card_id=$1 WHERE id=$2`, [
-    dest_id,
+    dest_prev_id,
     source_id,
   ]);
 
-  const result = await pool.query(`SELECT * FROM trellocards`);
+  await pool.query(`UPDATE trellocards SET prev_card_id=$1 WHERE id=$2`, [
+    source_id,
+    dest_id,
+  ]);
 
-  await pool.query("COMMIT");
+  if (source_id == source_last_id) {
+    await pool.query(`UPDATE trellolists SET last_card_id=$1 WHERE id=$2`, [
+      source_prev_id,
+      source_list_id,
+    ]);
+  }
 
-  return result.rows;
+  if (dest_prev_id == dest_last_id) {
+    await pool.query(`UPDATE trellolists SET last_card_id=$1 WHERE id=$2`, [
+      source_id,
+      dest_list_id,
+    ]);
+  }
+
+  // await pool.query("COMMIT");
 }
-// console.log(await updateCardsOrderDB(56, 58, 56, 54));
