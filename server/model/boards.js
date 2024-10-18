@@ -38,6 +38,7 @@ export async function updateBoardDB(boardId, title) {
 
 export async function deleteBoardDB(boardId) {
   const result = await pool.query("DELETE FROM boards WHERE id=$1", [boardId]);
+  if (result.rowCount !== 1) throw new Error("Error deleting board");
   return result.rowCount;
 }
 

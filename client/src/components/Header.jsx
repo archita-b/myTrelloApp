@@ -8,15 +8,17 @@ export default function Header({ setBoards }) {
   function addBoard(title) {
     createBoard(title).then((data) => {
       setBoards((currentBoard) => {
-        return [...currentBoard, ...data];
+        return [...currentBoard, ...data.title];
       });
     });
   }
 
   function handleCreateBoard() {
-    if (boardTitle.trim() === "") return;
-    addBoard(boardTitle);
-    setBoardTitle("");
+    if (boardTitle.trim() === "") alert("Please provide a name for the board");
+    else {
+      addBoard(boardTitle);
+      setBoardTitle("");
+    }
   }
 
   return (

@@ -17,5 +17,6 @@ export async function updateCardDB(
 
 export async function deleteCardDB(cardId) {
   const result = await pool.query("DELETE FROM cards WHERE id=$1", [cardId]);
+  if (result.rowCount !== 1) throw new Error("Error deleting card");
   return result.rowCount;
 }

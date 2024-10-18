@@ -18,7 +18,7 @@ export async function getBoards(req, res) {
 
 export async function createBoard(req, res) {
   try {
-    const title = req.body.title;
+    const { title } = req.body;
 
     if (title.trim() !== "") {
       const response = await createBoardDB(title);

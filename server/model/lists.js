@@ -10,6 +10,7 @@ export async function updateListDB(listId, title) {
 
 export async function deleteListDB(listId) {
   await pool.query("DELETE FROM lists WHERE id=$1", [listId]);
+  if (result.rowCount !== 1) throw new Error("Error deleting list");
   return result.rowCount;
 }
 
