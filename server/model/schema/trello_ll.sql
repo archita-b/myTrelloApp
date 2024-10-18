@@ -25,21 +25,6 @@ CREATE TABLE trellocards (
     completed BOOLEAN DEFAULT FALSE
 );
 
--- select both from cards table & lists table by joining them
--- SELECT trellocards.id AS cardid, trellolists.id AS listid, 
--- trellocards.title AS cardtitle, trellolists.title AS listtitle, 
--- trelloCards.description, trelloCards.duedate, trelloCards.completed
--- FROM trellocards 
--- INNER JOIN trellolists ON trellocards.list_id=trellolists.id;
-
--- select items from lists table to get the cards as an array in list object
--- SELECT trellolists.*, json_agg(trellocards.*) AS cards
--- FROM trellolists
--- LEFT JOIN
--- trellocards ON trellolists.id = trellocards.list_id 
--- WHERE trellolists.board_id=1
--- GROUP BY trellolists.id;
-
 -- delete a table that has references
 DROP TABLE <table_name> CASCADE;
 

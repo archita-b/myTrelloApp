@@ -1,4 +1,4 @@
-import { updateCardDB, deleteCardDB } from "../model/trelloModel.js";
+import { updateCardDB, deleteCardDB } from "../model/cards.js";
 
 export async function updateCard(req, res) {
   try {
@@ -11,19 +11,17 @@ export async function updateCard(req, res) {
       completed,
       cardId
     );
-    const data = res.json(response);
-    return data;
+    res.status(200).json(response);
   } catch (error) {
-    return res.json({ message: "Error updating card" });
+    return res.status(500).json({ message: "Error updating card" });
   }
 }
 
 export async function deleteCard(req, res) {
   try {
     const cardId = req.params.card_id;
-    const response = await deleteCardDB(cardId);
-    const data = await res.json(response);
-    return data;
+    await deleteCardDB(cardId);
+    res.status(200).json({ message: "Card deleted successfully" });
   } catch (error) {
     return res.status(500).json({ message: "Error deleting card" });
   }

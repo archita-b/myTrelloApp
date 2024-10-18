@@ -5,13 +5,12 @@ import {
   updateBoardDB,
   deleteBoardDB,
   createListDB,
-} from "../model/trelloModel.js";
+} from "../model/boards.js";
 
 export async function getBoards(req, res) {
   try {
-    const response = await getBoardsDB();
-    const data = await res.json(response);
-    return data;
+    const boards = await getBoardsDB();
+    res.status(200).json(boards);
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
   }
@@ -20,13 +19,13 @@ export async function getBoards(req, res) {
 export async function createBoard(req, res) {
   try {
     const title = req.body.title;
+
     if (title.trim() !== "") {
       const response = await createBoardDB(title);
-      const data = await res.json(response);
-      return data;
+      res.status(201).json(response);
     }
   } catch (error) {
-    return res.json({ message: "Error creating board" });
+    return res.status(500).json({ message: "Error creating board" });
   }
 }
 
@@ -34,44 +33,40 @@ export async function getListsForBoard(req, res) {
   try {
     const boardId = req.params.board_id;
     const response = await getListsForBoardDB(boardId);
-    const data = await res.json(response);
-    return data;
+    res.status(200).json(response);
   } catch (error) {
-    return res.status(500).json({ message: "Error getting lists for board" });
+    return res.status(500).json({ message: "Error fetching lists for board" });
   }
 }
 
 export async function updateBoard(req, res) {
   try {
-    const { title } = req.body.title;
+    const { title } = req.body;
     const boardId = req.params.board_id;
     const response = await updateBoardDB(boardId, title);
-    const data = res.json(response);
-    return data;
+    res.status(200).json(response);
   } catch (error) {
-    return res.json({ message: "Error updating board" });
+    return res.status(500).json({ message: "Error updating board" });
   }
 }
 
 export async function deleteBoard(req, res) {
   try {
     const boardId = req.params.board_id;
-    const response = await deleteBoardDB(boardId);
-    const data = await res.json(response);
-    return data;
+    await deleteBoardDB(boardId);
+    res.status(200).json({ message: "Board deleted successfully" });
   } catch (error) {
-    return res.json({ message: "Error deleting board" });
+    return res.status(500).json({ message: "Error deleting board" });
   }
 }
 
 export async function createList(req, res) {
   try {
-    const title = req.body.title;
+    const { title } = req.body;
     const boardId = req.params.board_id;
     const response = await createListDB(title, boardId);
-    const data = await res.json(response);
-    return data;
+    res.status(201).json(response);
   } catch (error) {
-    return res.json({ message: "Error creating list" });
+    return res.status(500).json({ message: "Error creating list" });
   }
 }

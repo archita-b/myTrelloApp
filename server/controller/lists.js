@@ -1,29 +1,23 @@
-import {
-  updateListDB,
-  deleteListDB,
-  createCardDB,
-} from "../model/trelloModel.js";
+import { updateListDB, deleteListDB, createCardDB } from "../model/lists.js";
 
 export async function updateList(req, res) {
   try {
-    const { title } = req.body.title;
+    const { title } = req.body;
     const listId = req.params.list_id;
     const response = await updateListDB(listId, title);
-    const data = res.json(response);
-    return data;
+    res.status(200).json(response);
   } catch (error) {
-    return res.json({ message: "Error updating list" });
+    return res.status(500).json({ message: "Error updating list" });
   }
 }
 
 export async function deleteList(req, res) {
   try {
     const listId = req.params.list_id;
-    const response = await deleteListDB(listId);
-    const data = await res.json(response);
-    return data;
+    await deleteListDB(listId);
+    res.status(200).json({ message: "List deleted successfully" });
   } catch (error) {
-    return res.json({ message: "Error deleting list" });
+    return res.status(500).json({ message: "Error deleting list" });
   }
 }
 
@@ -38,9 +32,8 @@ export async function createCard(req, res) {
       completed,
       listId
     );
-    const data = await res.json(response);
-    return data;
+    res.status(201).json(response);
   } catch (error) {
-    return res.json({ message: "Error creating card" });
+    return res.status(500).json({ message: "Error creating card" });
   }
 }

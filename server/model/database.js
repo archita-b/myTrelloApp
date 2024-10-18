@@ -6,7 +6,7 @@ const pool = new Pool({
   port: 5432,
   user: "postgres",
   password: "1234",
-  database: "trellodb",
+  database: "trello",
 });
 
 export default pool;
