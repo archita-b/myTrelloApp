@@ -58,7 +58,10 @@ export async function createListDB(title, boardId) {
     [last_list_id, max_id]
   );
 
-  await pool.query(`UPDATE trelloboard SET last_list_id=$1`, [max_id]);
+  await pool.query(`UPDATE trelloboard SET last_list_id=$1 WHERE id=$2`, [
+    max_id,
+    boardId,
+  ]);
 
   await pool.query("COMMIT");
   return result.rows[0];
@@ -76,7 +79,7 @@ export async function createCardDB(
     await pool.query(`SELECT last_card_id FROM trellolists WHERE id=$1`, [
       listId,
     ])
-  ).rows[0].id;
+  ).rows[0].last_card_id;
 
   await pool.query("BEGIN");
 
@@ -93,12 +96,14 @@ export async function createCardDB(
   ).rows[0].id;
 
   const result = await pool.query(
-    `UPDATE trellocards SET prev_card_id=$1 
-    WHERE id=$2 RETURNING *`,
+    `UPDATE trellocards SET prev_card_id=$1 WHERE id=$2 RETURNING *`,
     [last_card_id, max_id]
   );
 
-  await pool.query(`UPDATE trellolists SET last_card_id=$1`, [max_id]);
+  await pool.query(`UPDATE trellolists SET last_card_id=$1 WHERE id=$2`, [
+    max_id,
+    listId,
+  ]); //check
 
   await pool.query("COMMIT");
   return result.rows[0];
@@ -198,16 +203,14 @@ async function deleteLastList(listId, boardId) {
 
   await pool.query("BEGIN");
 
-  const result = await pool.query(`DELETE FROM trellolists WHERE id=$1`, [
-    listId,
-  ]);
-  await pool.query(`UPDATE trelloboard SET last_list_id=$1 WHERE id=$2`, [
-    prev_list_id,
-    boardId,
-  ]);
+  await pool.query(`DELETE FROM trellolists WHERE id=$1`, [listId]);
+  const result = await pool.query(
+    `UPDATE trelloboard SET last_list_id=$1 WHERE id=$2 RETURNING *`,
+    [prev_list_id, boardId]
+  );
 
   await pool.query("COMMIT");
-  return result.rowCount;
+  return result.rows[0];
 }
 
 // delete card
@@ -220,7 +223,7 @@ export async function deleteCardDB(cardId) {
     await pool.query(`SELECT last_card_id FROM trellolists WHERE id=$1`, [
       listId,
     ])
-  ).rows[0].id;
+  ).rows[0].last_card_id;
 
   if (cardId == last_card_id) {
     return deleteLastCard(cardId, listId);
@@ -246,7 +249,7 @@ async function deleteIntermediateCard(cardId) {
 
   await pool.query("COMMIT");
 
-  if (result.rowCount === 1) return result.rows[0];
+  return result.rows[0];
 }
 
 async function deleteLastCard(cardId, listId) {
@@ -258,17 +261,15 @@ async function deleteLastCard(cardId, listId) {
 
   await pool.query("BEGIN");
 
-  const result = await pool.query(`DELETE FROM trellocards WHERE id=$1`, [
-    cardId,
-  ]);
+  await pool.query(`DELETE FROM trellocards WHERE id=$1`, [cardId]);
 
-  await pool.query(`UPDATE trellolists SET last_card_id=$1 WHERE id=$2`, [
-    prev_card_id,
-    listId,
-  ]);
+  const result = await pool.query(
+    `UPDATE trellolists SET last_card_id=$1 WHERE id=$2 RETURNING *`,
+    [prev_card_id, listId]
+  );
 
   await pool.query("COMMIT");
-  return result.rowCount;
+  return result.rows[0];
 }
 
 // update lists order
