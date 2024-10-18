@@ -1,16 +1,16 @@
 import express from "express";
 import {
-  getBoard,
+  getBoards,
   createBoard,
   updateBoard,
   deleteBoard,
   getListsForBoard,
   createList,
-} from "../controller/trelloController.js";
+} from "../controller/boards.js";
 
 const router = express.Router();
 
-router.get("/", getBoard);
+router.get("/", getBoards);
 router.post("/", createBoard);
 
 router.get("/:board_id", getListsForBoard);

@@ -1,9 +1,5 @@
 import express from "express";
-import {
-  updateList,
-  deleteList,
-  createCard,
-} from "../controller/trelloController.js";
+import { updateList, deleteList, createCard } from "../controller/lists.js";
 
 const router = express.Router();
 
